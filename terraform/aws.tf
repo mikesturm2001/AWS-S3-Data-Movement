@@ -27,7 +27,8 @@ resource "aws_sns_topic" "s3-landing-zone-12134477a_sns_topic" {
 resource "aws_cloudwatch_event_rule" "s3_event_rule" {
   name        = "landing-zone-s3-event-rule"
   description = "Rule for S3 landing zone bucket Put events"
-  
+  # Explicitly depend on the creation of the S3 buckets
+  depends_on = [aws_s3_bucket.s3-landing-zone-12134477a, aws_s3_bucket.snowflake-drop-zone-12134477a]
   event_pattern = jsonencode({
     source      = ["aws.s3"],
     detail_type = ["AWS API Call via CloudTrail"],
