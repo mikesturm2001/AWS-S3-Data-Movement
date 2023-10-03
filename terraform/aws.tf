@@ -86,15 +86,6 @@ resource "aws_sns_topic_subscription" "s3_event_subscription" {
 }
 
 
-
-
-# Create Auto Scaling Group
-resource "aws_launch_template" "ec2_launch_template" {
-  name_prefix   = "example-"
-  instance_type = "t2.micro"
-  image_id      = "ami-12345678" # Replace with your desired AMI ID
-}
-
 # Create Auto Scaling Group and launch template with the IAM role
 resource "aws_launch_template" "ec2_launch_template" {
   name_prefix   = "example-"
