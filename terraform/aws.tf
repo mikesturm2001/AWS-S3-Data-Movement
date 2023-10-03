@@ -10,8 +10,8 @@ resource "aws_s3_bucket" "s3-landing-zone-12134477a" {
   acl    = "private"
 }
 
-resource "aws_s3_bucket" "snowflake-drop_zone-12134477a" {
-  bucket = "snowflake-drop_zone-12134477a"
+resource "aws_s3_bucket" "snowflake-drop-zone-12134477a" {
+  bucket = "snowflake-drop-zone-12134477a"
   acl    = "private"
 }
 
@@ -152,7 +152,7 @@ resource "aws_iam_policy" "s3_permissions_policy" {
       {
         Action   = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
         Effect   = "Allow",
-        Resource = [aws_s3_bucket.s3-landing-zone-12134477a.arn, aws_s3_bucket.snowflake-drop_zone-12134477a.arn]
+        Resource = [aws_s3_bucket.s3-landing-zone-12134477a.arn, aws_s3_bucket.snowflake-drop-zone-12134477a.arn]
       }
     ]
   })
