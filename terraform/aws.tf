@@ -8,11 +8,19 @@ provider "aws" {
 resource "aws_s3_bucket" "s3-landing-zone-12134477a" {
   bucket = "s3-landing-zone-12134477a"
   acl    = "private"
+  # Prevent Terraform from attempting to recreate an existing bucket
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_s3_bucket" "snowflake-drop-zone-12134477a" {
   bucket = "snowflake-drop-zone-12134477a"
   acl    = "private"
+  # Prevent Terraform from attempting to recreate an existing bucket
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Create SNS topic
