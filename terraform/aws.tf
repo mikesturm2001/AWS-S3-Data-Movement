@@ -18,6 +18,9 @@ resource "aws_s3_bucket" "snowflake-drop-zone-12134477a" {
 # Create SNS topic
 resource "aws_sns_topic" "s3-landing-zone-12134477a_sns_topic" {
   name = "s3-landing-zone-12134477a_sns_topic"
+
+  # Explicitly depend on the creation of the S3 buckets
+  depends_on = [aws_s3_bucket.s3-landing-zone-12134477a, aws_s3_bucket.snowflake-drop-zone-12134477a]
 }
 
 # Create EventBridge rule to read S3 put notifications
@@ -137,7 +140,7 @@ resource "aws_iam_role" "ec2_role" {
 
   # Add a lifecycle block to handle the resource if it already exists
   lifecycle {
-    ignore_changes = [tags]  # Ignore changes to tags
+    ignore_changes = [tags, assume_role_policy]  # Ignore changes to tags
   }
 }
 
