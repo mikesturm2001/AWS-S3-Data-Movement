@@ -4,9 +4,21 @@ provider "aws" {
   region = "us-east-1" # Change to your desired AWS region
 }
 
-# Create S3 buckets
+# Import the existing S3 buckets into Terraform state
 resource "aws_s3_bucket" "s3-landing-zone-12134477a" {
   bucket = "s3-landing-zone-12134477a"
+  acl    = "private"
+}
+
+# Import the existing S3 buckets into Terraform state
+resource "aws_s3_bucket" "s3-landing-zone-12134477a" {
+  bucket = "s3-landing-zone-12134477a"
+  acl    = "private"
+}
+
+# Create S3 buckets
+resource "aws_s3_bucket" "snowflake-drop-zone-12134477a" {
+  bucket = "snowflake-drop-zone-12134477a"
   acl    = "private"
   # Prevent Terraform from attempting to recreate an existing bucket
   lifecycle {
