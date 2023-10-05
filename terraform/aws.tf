@@ -131,6 +131,8 @@ resource "aws_launch_template" "ec2_launch_template" {
             # Pull and run your Docker container
             docker run -d --name my_container -p 80:80 your-docker-image:tag
             EOF
+
+  user_data_replace_on_change = true
 }
 
 resource "aws_autoscaling_group" "s3_data_movement_asg" {
