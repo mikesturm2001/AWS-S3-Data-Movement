@@ -1,0 +1,47 @@
+name: Deploy Terraform to AWS
+
+on: [workflow_dispatch]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Change to your desired AWS region
+
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
+
+    - name: Terraform init
+      working-directory: ./terraform/backend
+      run: terraform init
+
+    - name: Terraform plan
+      working-directory: ./terraform/backend
+      id: tf-plan
+      run: terraform plan -out=tfplan
+      
+    - name: Terraform apply 
+      if: github.ref == 'refs/heads/main'
+      working-directory: ./terraform/backend
+      run: terraform apply -auto-approve tfplan
+    
+    - name: Terraform output
+      working-directory: ./terraform/backend
+      run: terraform output
+
+    - name: Clean up
+      run: terraform destroy -auto-approve
+      if: always()  # Ensure destruction even on failure
+
+# Add any additional steps or customizations as needed
