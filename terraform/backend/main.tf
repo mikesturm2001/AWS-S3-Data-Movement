@@ -1,9 +1,15 @@
+# Create S3 backend state for terraform
+# https://developer.hashicorp.com/terraform/language/settings/backends/s3
+# 
+# Note: Since this is creating the terraform state backend it is impossible to run this more than once
+# https://stackoverflow.com/questions/47913041/initial-setup-of-terraform-backend-using-terraform
+
 provider "aws" {
   region = "us-east-1"
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "terraform-data-movement-state-1347"
+  bucket = "terraform-data-movement-state-1247"
 
   # Prevent this bucket from getting deleted
   lifecycle {
