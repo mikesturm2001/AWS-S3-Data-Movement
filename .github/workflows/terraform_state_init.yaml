@@ -35,13 +35,5 @@ jobs:
       if: github.ref == 'refs/heads/main'
       working-directory: ./terraform/backend
       run: terraform apply -auto-approve tfplan
-    
-    - name: Terraform output
-      working-directory: ./terraform/backend
-      run: terraform output
-
-    - name: Clean up
-      run: terraform destroy -auto-approve
-      if: always()  # Ensure destruction even on failure
 
 # Add any additional steps or customizations as needed
