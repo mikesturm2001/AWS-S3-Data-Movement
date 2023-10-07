@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "terraform-data-movement-state-1447"
+  bucket = "terraform-data-movement-state-1347"
 
   # Prevent this bucket from getting deleted
   lifecycle {
@@ -48,15 +48,4 @@ resource "aws_dynamodb_table" "terrform_locks" {
     name = "LockID"
     type = "S"
   }
-}
-
-# Output the ARNs of the newly created objects
-output "s3_bucket_arn" {
-  description = "The ARN of the terraform S3 state bucket"
-  value = aws_s3_bucket.terraform_state.arn
-}
-
-output "dynamoDB_arn" {
-  description = "The ARN of the dynamoDB used to hold terraform locks"
-  value = aws_dynamodb_table.terrform_locks.arn
 }
