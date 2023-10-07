@@ -4,6 +4,7 @@ provider "aws" {
   region = "us-east-1" # Change to your desired AWS region
 }
 
+
 # Import the existing S3 buckets into Terraform state
 resource "aws_s3_bucket" "s3-landing-zone-12134477a" {
   bucket = "s3-landing-zone-12134477a"
@@ -115,6 +116,7 @@ resource "aws_launch_template" "ec2_launch_template" {
   name_prefix   = "example-"
   instance_type = "t2.micro"
   image_id      = "ami-12345678" # Replace with your desired AMI ID
+  security_groups = [aws_security_group.instance.id]
 
   iam_instance_profile {
     name = aws_iam_role.ec2_role.name
@@ -132,18 +134,42 @@ resource "aws_launch_template" "ec2_launch_template" {
             docker run -d --name my_container -p 80:80 your-docker-image:tag
             EOF
 
-  user_data_replace_on_change = true
+  # Required when using a launch tempate with an auto scaling group
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
+# Get the VPC and subnets that the ASG will deploy EC2 instances into
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+
 resource "aws_autoscaling_group" "s3_data_movement_asg" {
-  name                      = "s3-data-movement-asg"
+  name = "s3-data-movement-asg"
+  vpc_zone_identifier = data.aws_subnets.default.ids
+
   launch_template {
     id      = aws_launch_template.ec2_launch_template.id
     version = "$Latest"
   }
-  min_size                  = 1
-  max_size                  = 3
-  desired_capacity          = 2
+  
+  min_size                  = 0
+  max_size                  = 2
+
+  tag {
+    key = "Name"
+    value = "terraform-asg-s3-data-movement"
+    propagate_at_launch = true
+  }
 }
 
 
