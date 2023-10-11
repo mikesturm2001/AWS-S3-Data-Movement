@@ -23,17 +23,17 @@ jobs:
         terraform_version: 1.0.0
 
     - name: Terraform init
-      working-directory: ./terraform
+      working-directory: ./terraform/live/global/s3
       run: terraform init
 
     - name: Terraform plan
-      working-directory: ./terraform
+      working-directory: ./terraform/live/global/s3
       id: tf-plan
       run: terraform plan -out=tfplan
       
     - name: Terraform apply 
       if: github.ref == 'refs/heads/main'
-      working-directory: ./terraform
+      working-directory: ./terraform/live/global/s3
       run: terraform apply -auto-approve tfplan
 
     - name: Clean up

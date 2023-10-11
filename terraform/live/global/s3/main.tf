@@ -10,7 +10,6 @@ resource "aws_s3_bucket" "s3_buckets" {
   for_each = toset(var.bucket_names)
 
   bucket = each.key
-  acl = "private"
 
   # Prevent Terraform from attempting to recreate an existing bucket
   lifecycle {
