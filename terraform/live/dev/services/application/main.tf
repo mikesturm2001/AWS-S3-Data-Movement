@@ -55,6 +55,7 @@ resource "aws_iam_role_policy_attachment" "s3_permissions_attachment" {
 # Create SNS topic
 resource "aws_sns_topic" "s3-landing-zone_sns_topic" {
   name = "s3-landing-zone_sns_topic"
+  fifo_topic = true
 }
 
 # Create EventBridge rule to read S3 put notifications
