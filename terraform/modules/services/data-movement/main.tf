@@ -9,7 +9,7 @@ resource "aws_launch_template" "ec2_launch_template" {
     name = var.ec2_role_name
   }
 
-  user_data = templatefile("${path.module}/user-data.sh")
+  user_data = templatefile("${path.module}/user-data.sh", {name = "Terraform"})
 
   # Required when using a launch tempate with an auto scaling group
   lifecycle {
