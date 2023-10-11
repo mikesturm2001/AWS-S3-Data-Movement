@@ -1,6 +1,6 @@
 # Create SNS topic
 resource "aws_sns_topic" "s3-landing-zone-sns-topic" {
-  name = "s3-landing-zone-sns-topic.fifo"
+  name = "s3-landing-zone-sns-topic"
 
   # Explicitly depend on the creation of the S3 buckets
   depends_on = [aws_s3_bucket.s3-landing-zone, aws_s3_bucket.snowflake-drop-zone-12134477a]
@@ -36,7 +36,7 @@ resource "aws_cloudwatch_event_target" "target" {
 
 # Create an SQS FIFO queue
 resource "aws_sqs_queue" "s3_event_queue" {
-  name                      = "s3-event-queue.fifo"
+  name                      = "s3-event-queue"
   fifo_queue                = true
   content_based_deduplication = true
 }

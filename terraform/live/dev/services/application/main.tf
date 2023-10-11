@@ -40,7 +40,7 @@ resource "aws_iam_policy" "s3_permissions_policy" {
       {
         Action   = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
         Effect   = "Allow",
-        Resource = [data.terraform_remote_state.s3.outputs.s3_bucket_arns]
+        Resource = data.terraform_remote_state.s3.outputs.s3_bucket_arns
       }
     ]
   })
@@ -54,8 +54,8 @@ resource "aws_iam_role_policy_attachment" "s3_permissions_attachment" {
 
 # Create SNS topic
 resource "aws_sns_topic" "s3-landing-zone-sns-topic" {
-  name = "s3-landing-zone-sns-topic.fifo"
-  fifo_topic = true
+  name = "s3-landing-zone-sns-topic"
+  fifo_topic = false
 }
 
 # Create EventBridge rule to read S3 put notifications
@@ -85,10 +85,10 @@ resource "aws_cloudwatch_event_target" "target" {
   arn = aws_sns_topic.s3-landing-zone-sns-topic.arn
 }
 
-# Create an SQS FIFO queue
+# Create an SQS queue
 resource "aws_sqs_queue" "s3_event_queue" {
-  name                      = "s3-event-queue.fifo"
-  fifo_queue                = true
+  name                      = "s3-event-queue"
+  fifo_queue                = false
   content_based_deduplication = true
 }
 
