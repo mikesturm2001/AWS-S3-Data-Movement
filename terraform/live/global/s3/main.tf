@@ -1,3 +1,15 @@
+# Set up back end state
+terraform {
+  backend "s3" {
+    bucket         = "terraform-data-movement-state-1247"
+    key            = "global/s3/terraform.tfstate"
+    region         = "us-east-1"
+
+    dynamodb_table = "terraform-up-and-running-locks"
+    encrypt        = true
+  }
+}
+
 # Define a variable to hold the names of S3 buckets as a list
 variable "bucket_names" {
   description = "List of S3 buckets used as drop zones for data movement"
