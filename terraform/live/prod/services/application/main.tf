@@ -1,6 +1,6 @@
 # Create SNS topic
 resource "aws_sns_topic" "s3-landing-zone-sns-topic" {
-  name = "s3-landing-zone-sns-topic"
+  name = "s3-landing-zone-sns-topic.fifo"
 
   # Explicitly depend on the creation of the S3 buckets
   depends_on = [aws_s3_bucket.s3-landing-zone, aws_s3_bucket.snowflake-drop-zone-12134477a]
