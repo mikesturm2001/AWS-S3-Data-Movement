@@ -1,3 +1,4 @@
+# Import main Python Application
 module "data-movement" {
   source = "../../../../modules/services/data-movement"
   cluster_name = "S3-to-S3"
@@ -6,11 +7,22 @@ module "data-movement" {
   max_size = 2
 }
 
+# Fetch S3 bucket information
 data "terraform_remote_state" "s3" {
   backend = "s3"
   config = {
     bucket = "terraform-data-movement-state-1247"
     key    = "global/s3/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+# Fetch EC2 Role information
+data "terraform_remote_state" "ec2_role" {
+  backend = "s3"
+  config = {
+    bucket = "terraform-data-movement-state-1247"
+    key    = "global/iam/terraform.tfstate"
     region = "us-east-1"
   }
 }
@@ -32,9 +44,10 @@ resource "aws_iam_policy" "s3_permissions_policy" {
   })
 }
 
+# need to get ec2 role as well
 resource "aws_iam_role_policy_attachment" "s3_permissions_attachment" {
   policy_arn = aws_iam_policy.s3_permissions_policy.arn
-  role       = aws_iam_role.ec2_role.name
+  role       = data.terraform_remote_state.ec2_role.outputs.ec2_role_arn
 }
 
 # Create SNS topic
@@ -46,8 +59,7 @@ resource "aws_sns_topic" "s3-landing-zone_sns_topic" {
 resource "aws_cloudwatch_event_rule" "s3_event_rule" {
   name        = "landing-zone-s3-event-rule"
   description = "Rule for S3 landing zone bucket Put events"
-  # Explicitly depend on the creation of the S3 buckets
-  depends_on = [aws_s3_bucket.s3-landing-zone, aws_s3_bucket.snowflake-drop-zone-12134477a]
+
   event_pattern = jsonencode({
     source      = ["aws.s3"],
     detail_type = ["AWS API Call via CloudTrail"],
