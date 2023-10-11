@@ -1,9 +1,18 @@
 module "data-movement" {
-  source = "../../modules/services/data-movement"
-
+  source = "../../../../modules/services/data-movement"
+  cluster_name = "S3-to-S3"
   instance_type = "t2.micro"
   min_size = 0
   max_size = 2
+}
+
+data "terraform_remote_state" "s3" {
+  backend = "s3"
+  config = {
+    bucket = "terraform-data-movement-state-1247"
+    key    = "global/s3/terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 # Attach an inline policy to the IAM role to grant S3 permissions
@@ -17,7 +26,7 @@ resource "aws_iam_policy" "s3_permissions_policy" {
       {
         Action   = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
         Effect   = "Allow",
-        Resource = [aws_s3_bucket.s3-landing-zone.arn, aws_s3_bucket.snowflake-drop-zone-12134477a.arn]
+        Resource = [data.terraform_remote_state.s3.outputs.s3_bucket_arns]
       }
     ]
   })
@@ -28,23 +37,9 @@ resource "aws_iam_role_policy_attachment" "s3_permissions_attachment" {
   role       = aws_iam_role.ec2_role.name
 }
 
-# Fetch the S3 bucket IDs from the remote state
-data "terraform_remote_state" "remote" {
-  backend = "s3"
-  config = {
-    bucket         = "terraform-data-movement-state-1247"
-    key            = "global/s3/terraform.tfstate"
-    region         = "us-east-1"
-  }
-}
-
 # Create SNS topic
 resource "aws_sns_topic" "s3-landing-zone_sns_topic" {
   name = "s3-landing-zone_sns_topic"
-
-  # Explicitly depend on the creation of the S3 buckets
-  depends_on = ["${data.terraform_remote_state.remote.s3_drop_zone_bucket_id}", 
-                "${data.terraform_remote_state.remote.snowflake_drop_zone_bucket_id}"]
 }
 
 # Create EventBridge rule to read S3 put notifications

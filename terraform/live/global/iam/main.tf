@@ -1,3 +1,15 @@
+# Set up back end state
+terraform {
+  backend "s3" {
+    bucket         = "terraform-data-movement-state-1247"
+    key            = "global/iam/terraform.tfstate"
+    region         = "us-east-1"
+
+    dynamodb_table = "terraform-up-and-running-locks"
+    encrypt        = true
+  }
+}
+
 # Create an IAM role for EC2 instances to assume
 resource "aws_iam_role" "ec2_role" {
   name = "ec2-s3-access-role"
