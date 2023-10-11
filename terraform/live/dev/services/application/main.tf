@@ -1,3 +1,15 @@
+# Set up back end state
+terraform {
+  backend "s3" {
+    bucket         = "terraform-data-movement-state-1247"
+    key            = "dev/services/application/terraform.tfstate"
+    region         = "us-east-1"
+
+    dynamodb_table = "terraform-up-and-running-locks"
+    encrypt        = true
+  }
+}
+
 # Fetch EC2 Role information
 data "terraform_remote_state" "ec2_role" {
   backend = "s3"
