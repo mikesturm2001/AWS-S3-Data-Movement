@@ -2,7 +2,7 @@
 resource "aws_launch_template" "ec2_launch_template" {
   name_prefix   = "example-"
   instance_type = var.instance_type
-  image_id      = "ami-12345678" # Replace with your desired AMI ID
+  image_id      = "ami-067d1e60475437da2" # Replace with your desired AMI ID
   #security_groups = [aws_security_group.instance.id]
 
   iam_instance_profile {
