@@ -79,7 +79,7 @@ resource "aws_cloudwatch_event_target" "target" {
   
   # Specify your target action here (e.g., SNS topic, Lambda function, etc.)
   # Example: SNS Topic
-  arn = aws_sns_topic.s3-landing-zone-12134477a_sns_topic.arn
+  arn = aws_sns_topic.s3-landing-zone_sns_topic.arn
 }
 
 # Create an SQS FIFO queue
