@@ -6,7 +6,7 @@ resource "aws_launch_template" "ec2_launch_template" {
   #security_groups = [aws_security_group.instance.id]
 
   iam_instance_profile {
-    name = aws_iam_role.ec2_role.name
+    name = var.ec2_role_name
   }
 
   user_data = templatefile("${path.module}/user-data.sh")

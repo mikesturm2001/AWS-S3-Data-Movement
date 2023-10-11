@@ -1,12 +1,3 @@
-# Import main Python Application
-module "data-movement" {
-  source = "../../../../modules/services/data-movement"
-  cluster_name = "S3-to-S3"
-  instance_type = "t2.micro"
-  min_size = 0
-  max_size = 2
-}
-
 # Fetch S3 bucket information
 data "terraform_remote_state" "s3" {
   backend = "s3"
@@ -26,6 +17,17 @@ data "terraform_remote_state" "ec2_role" {
     region = "us-east-1"
   }
 }
+
+# Import main Python Application
+module "data-movement" {
+  source = "../../../../modules/services/data-movement"
+  cluster_name = "S3-to-S3"
+  instance_type = "t2.micro"
+  ec2_role_name = data.terraform_remote_state.ec2_role.outputs.ec2_role_name
+  min_size = 0
+  max_size = 2
+}
+
 
 # Attach an inline policy to the IAM role to grant S3 permissions
 resource "aws_iam_policy" "s3_permissions_policy" {

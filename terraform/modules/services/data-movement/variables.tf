@@ -17,3 +17,8 @@ variable "max_size" {
   description = "The maximum number of EC2 instances in the ASG"
   type = number
 }
+
+variable "ec2_role_name" {
+  description = "EC2 instance role name"
+  type = string
+}
