@@ -6,7 +6,7 @@ resource "aws_launch_template" "ec2_launch_template" {
   #security_groups = [aws_security_group.instance.id]
 
   iam_instance_profile {
-    name = var.ec2_role_name
+    name = var.ec2_instance_profile
   }
 
   user_data = base64encode(templatefile("${path.module}/user-data.sh", {name = "Terraform"}))

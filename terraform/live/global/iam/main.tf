@@ -29,3 +29,9 @@ resource "aws_iam_role" "ec2_role" {
     ignore_changes = [tags, assume_role_policy]  # Ignore changes to tags
   }
 }
+
+# Create an instance profile for the EC2 instances
+resource "aws_iam_instance_profile" "ec2_data_movement_instance_profile" {
+  name = "ec2_data_movement_instance_profile"
+  role = aws_iam_role.ec2_role.name
+}

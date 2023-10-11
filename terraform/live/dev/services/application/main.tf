@@ -24,6 +24,8 @@ module "data-movement" {
   cluster_name = "S3-to-S3"
   instance_type = "t2.micro"
   ec2_role_name = data.terraform_remote_state.ec2_role.outputs.ec2_role_name
+  ec2_role_arn = data.terraform_remote_state.ec2_role.outputs.ec2_role_arn
+  ec2_instance_profile = data.terraform_remote_state.ec2_role.outputs.ec2_instance_profile
   min_size = 0
   max_size = 2
 }

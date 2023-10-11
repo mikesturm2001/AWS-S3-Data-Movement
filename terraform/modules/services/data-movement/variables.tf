@@ -22,3 +22,13 @@ variable "ec2_role_name" {
   description = "EC2 instance role name"
   type = string
 }
+
+variable "ec2_role_arn" {
+  description = "EC2 instance role arn"
+  type = string
+}
+
+variable "ec2_instance_profile" {
+  description = "The instance profile for the EC2 launch template"
+  type = string
+}
