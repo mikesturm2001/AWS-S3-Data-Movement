@@ -53,8 +53,8 @@ resource "aws_iam_role_policy_attachment" "s3_permissions_attachment" {
 }
 
 # Create SNS topic
-resource "aws_sns_topic" "s3-landing-zone_sns_topic" {
-  name = "s3-landing-zone_sns_topic"
+resource "aws_sns_topic" "s3-landing-zone-sns-topic" {
+  name = "s3-landing-zone-sns-topic"
   fifo_topic = true
 }
 
@@ -82,7 +82,7 @@ resource "aws_cloudwatch_event_target" "target" {
   
   # Specify your target action here (e.g., SNS topic, Lambda function, etc.)
   # Example: SNS Topic
-  arn = aws_sns_topic.s3-landing-zone_sns_topic.arn
+  arn = aws_sns_topic.s3-landing-zone-sns-topic.arn
 }
 
 # Create an SQS FIFO queue
@@ -108,7 +108,7 @@ resource "aws_sqs_queue_policy" "s3_event_queue_policy" {
         Resource  = aws_sqs_queue.s3_event_queue.arn,
         Condition = {
           ArnEquals = {
-            "aws:SourceArn" : aws_sns_topic.s3-landing-zone_sns_topic.arn
+            "aws:SourceArn" : aws_sns_topic.s3-landing-zone-sns-topic.arn
           }
         }
       }
@@ -118,7 +118,7 @@ resource "aws_sqs_queue_policy" "s3_event_queue_policy" {
 
 # Subscribe the SNS topic to the SQS queue
 resource "aws_sns_topic_subscription" "s3_event_subscription" {
-  topic_arn = aws_sns_topic.s3-landing-zone_sns_topic.arn
+  topic_arn = aws_sns_topic.s3-landing-zone-sns-topic.arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.s3_event_queue.arn
 }

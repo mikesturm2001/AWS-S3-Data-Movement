@@ -1,6 +1,6 @@
 # Create SNS topic
-resource "aws_sns_topic" "s3-landing-zone_sns_topic" {
-  name = "s3-landing-zone_sns_topic"
+resource "aws_sns_topic" "s3-landing-zone-sns-topic" {
+  name = "s3-landing-zone-sns-topic"
 
   # Explicitly depend on the creation of the S3 buckets
   depends_on = [aws_s3_bucket.s3-landing-zone, aws_s3_bucket.snowflake-drop-zone-12134477a]
@@ -57,7 +57,7 @@ resource "aws_sqs_queue_policy" "s3_event_queue_policy" {
         Resource  = aws_sqs_queue.s3_event_queue.arn,
         Condition = {
           ArnEquals = {
-            "aws:SourceArn" : aws_sns_topic.s3-landing-zone_sns_topic.arn
+            "aws:SourceArn" : aws_sns_topic.s3-landing-zone-sns-topic.arn
           }
         }
       }
@@ -67,7 +67,7 @@ resource "aws_sqs_queue_policy" "s3_event_queue_policy" {
 
 # Subscribe the SNS topic to the SQS queue
 resource "aws_sns_topic_subscription" "s3_event_subscription" {
-  topic_arn = aws_sns_topic.s3-landing-zone_sns_topic.arn
+  topic_arn = aws_sns_topic.s3-landing-zone-sns-topic.arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.s3_event_queue.arn
 }
