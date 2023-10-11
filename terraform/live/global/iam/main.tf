@@ -60,7 +60,7 @@ resource "aws_iam_policy" "s3_permissions_policy" {
 # need to get ec2 role as well
 resource "aws_iam_role_policy_attachment" "s3_permissions_attachment" {
   policy_arn = aws_iam_policy.s3_permissions_policy.arn
-  role       = aws_iam_role.ec2_role
+  role       = aws_iam_role.ec2_role.name
 }
 
 # Create an instance profile for the EC2 instances
