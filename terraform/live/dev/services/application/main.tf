@@ -89,7 +89,7 @@ resource "aws_cloudwatch_event_target" "target" {
 resource "aws_sqs_queue" "s3_event_queue" {
   name                      = "s3-event-queue"
   fifo_queue                = false
-  content_based_deduplication = true
+  content_based_deduplication = false
 }
 
 # Define a policy for allowing SNS to publish to the SQS queue
