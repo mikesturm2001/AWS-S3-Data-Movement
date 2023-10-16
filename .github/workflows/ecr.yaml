@@ -10,7 +10,14 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-      # https://github.com/aws-actions/amazon-ecr-login
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Change to your desired AWS region
+
+    # https://github.com/aws-actions/amazon-ecr-login
     - name: Login to Amazon ECR
       id: login-pf-aws-ecr
       uses: aws-actions/amazon-ecr-login@v1
