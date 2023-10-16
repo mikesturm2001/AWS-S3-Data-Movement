@@ -4,6 +4,5 @@ services:
     build:
       context: .  # Use the current directory as the build context
       dockerfile: Dockerfile
-    image: <your-ecr-repo-url>/<your-image-name>:<tag>
     ports:
       - "80:80"

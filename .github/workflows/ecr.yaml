@@ -1,9 +1,6 @@
 name: Build and Push Docker Image to ECR
 
-on:
-  push:
-    branches:
-      - main  # Adjust this to your branch name
+on: [workflow_dispatch]
 
 jobs:
   build:
