@@ -21,17 +21,42 @@ data "terraform_remote_state" "ec2_role" {
 }
 
 # Import main Python Application
-module "data-movement" {
-  source = "../../../../modules/services/data-movement"
-  cluster_name = "S3-to-S3"
-  instance_type = "t2.micro"
-  ec2_role_name = data.terraform_remote_state.ec2_role.outputs.ec2_role_name
-  ec2_role_arn = data.terraform_remote_state.ec2_role.outputs.ec2_role_arn
-  ec2_instance_profile = data.terraform_remote_state.ec2_role.outputs.ec2_instance_profile
-  min_size = 0
+module "eks_cluster" {
+  source = "../../../../modules/services/eks-cluster"
+
+  name = "data-movement-eks-cluster"
+  min_size = 1
   max_size = 2
+  desired_size = 1
+
+  instance_types = ["t3.small"]
 }
 
+provider "kubernetes" {
+  host = module.eks_cluster.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks_cluster.cluster_certificate_authority[0].data)
+  token = data.aws_eks_cluster_auth.cluster.token
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks_cluster.cluster_name
+}
+
+module "data-movement" {
+  source = "../../../../modules/services/k8s-app"
+
+  name = "data-movement"
+  image = "insert_image_here"
+  replicas = 2
+  container_port = 5000
+
+  environment_variables = {
+    PROVIDER = "Terraform"
+  }
+
+  # Only deploy the app after the cluster has been deployed
+  depends_on = [module.eks_cluster]
+}
 
 # Create SNS topic
 resource "aws_sns_topic" "s3-landing-zone-sns-topic" {
