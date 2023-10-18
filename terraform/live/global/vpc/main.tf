@@ -48,10 +48,3 @@ resource "aws_subnet" "private_subnets" {
     Name = "private-subnet-${count.index + 1}"
   }
 }
-
-resource "aws_vpc_endpoint" "s3_endpoints" {
-  count = 2
-  vpc_id = aws_vpc.data_movement_vpc.id
-  service_name = "com.amazonaws.us-east-1.s3"
-  route_table_ids = [aws_vpc.data_movement_vpc.default_route_table_id]
-}
