@@ -17,7 +17,7 @@ resource "aws_iam_role" "cluster" {
 
 # Allow EKS to assume the IAM role
 data "aws_iam_policy_document" "cluster_assume_role" {
-  statment {
+  statement {
     effect = "Allow"
     actions = ["sts:AssumeRole"]
     principals {

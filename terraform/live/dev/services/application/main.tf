@@ -25,7 +25,7 @@ data "terraform_remote_state" "aws_ecr_repository" {
   backend = "s3"
   config = {
     bucket = "terraform-data-movement-state-1247"
-    key = "global/ec2/terrafrom.tfstate"
+    key = "global/ecr/terrafrom.tfstate"
     region = "us-east-1"
   }
 }
