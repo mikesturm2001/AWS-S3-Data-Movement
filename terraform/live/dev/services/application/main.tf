@@ -20,6 +20,21 @@ data "terraform_remote_state" "ec2_role" {
   }
 }
 
+# Fetch latest Docker image
+data "terraform_remote_state" "aws_ecr_repository" {
+  backend = "s3"
+  config = {
+    bucket = "terraform-data-movement-state-1247"
+    key = "global/ec2/terrafrom.tfstate"
+    region = "us-east-1"
+  }
+}
+
+data "aws_ecr_image" "app_image" {
+  repository_name = data.terraform_remote_state.aws_ecr_repository.ecr_repository_name
+  image_tag = "latest"
+}
+
 # Import main Python Application
 module "eks_cluster" {
   source = "../../../../modules/services/eks-cluster"
@@ -46,7 +61,7 @@ module "data-movement" {
   source = "../../../../modules/services/k8s-app"
 
   name = "data-movement"
-  image = "insert_image_here"
+  image = data.aws_ecr_image.app_image
   replicas = 2
   container_port = 5000
 

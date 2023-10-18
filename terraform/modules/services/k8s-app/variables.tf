@@ -18,7 +18,7 @@ variable "replicas" {
     type = number
 }
 
-variable "environmnet_variables" {
+variable "environment_variables" {
     description = "Environment variables to set for the app"
     type = map(string)
     default = {}

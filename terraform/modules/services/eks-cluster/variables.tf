@@ -18,7 +18,7 @@ variable "desired_size" {
   type = number
 }
 
-variables "instance_type" {
+variable "instance_types" {
   description = "The types of EC2 instances to run in the node group"
   type = list(string)
 }
