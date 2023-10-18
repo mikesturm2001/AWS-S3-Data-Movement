@@ -31,7 +31,7 @@ data "terraform_remote_state" "aws_ecr_repository" {
 }
 
 data "aws_ecr_image" "app_image" {
-  repository_name = data.terraform_remote_state.aws_ecr_repository.ecr_repository_name
+  repository_name = data.terraform_remote_state.aws_ecr_repository.outputs.ecr_repository_name
   image_tag = "latest"
 }
 
