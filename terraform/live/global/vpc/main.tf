@@ -31,10 +31,9 @@ locals {
   }
 }
 
-resource "aws_eip" "nat_gateway_eip" {
-  domain = "vpc"
-}
+######### Set up Public Subnet #########
 
+# Create public subnet
 resource "aws_subnet" "public_subnet" {
   count          = 1
   vpc_id         = aws_vpc.data_movement_vpc.id
@@ -43,13 +42,39 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 }
 
+# Create Internet Gateway for VPC
+resource "aws_internet_gateway" "internet_gateway" {
+  vpc_id = aws_vpc.data_movement_vpc.id
+}
+
+# Create a route table for the nat_gateway to the internet gateway
+resource "aws_route_table" "public_subnet_routes" {
+  vpc_id = aws_vpc.data_movement_vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.internet_gateway.id
+  }
+}
+
+# Addociate the route table to the public subnet
+resource "aws_route_table_association" "nat_gateway" {
+  subnet_id = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public_subnet_routes.id
+}
+
+######### Set up Private Subnets #########
+
+# Create Elastic IP for Nat Gateway
+resource "aws_eip" "nat_gateway_eip" {
+  domain = "vpc"
+}
+
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.nat_gateway_eip.id
   subnet_id     = aws_subnet.public_subnet[0].id  # Associating with the public subnet
 
   depends_on = [aws_subnet.public_subnet]  # Ensure the public subnet is created first
 }
-
 
 resource "aws_subnet" "private_subnets" {
   count = 2
