@@ -71,7 +71,7 @@ module "data-movement" {
   source = "../../../../modules/services/k8s-app"
 
   name = "data-movement"
-  image = data.aws_ecr_image.app_image.image_url
+  image = data.aws_ecr_image.app_image
   replicas = 2
   container_port = 5000
 
