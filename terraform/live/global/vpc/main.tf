@@ -58,7 +58,7 @@ resource "aws_route_table" "public_subnet_routes" {
 
 # Addociate the route table to the public subnet
 resource "aws_route_table_association" "nat_gateway" {
-  subnet_id = aws_subnet.public_subnet.id
+  subnet_id = aws_subnet.public_subnet[0].id
   route_table_id = aws_route_table.public_subnet_routes.id
 }
 
