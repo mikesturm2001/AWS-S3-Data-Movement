@@ -53,7 +53,7 @@ module "eks_cluster" {
   min_size = 1
   max_size = 2
   desired_size = 1
-  subnet_ids = data.terraform_remote_state.data_movement_vpc.output.private_subnet_ids
+  subnet_ids = data.terraform_remote_state.data_movement_vpc.outputs.private_subnet_ids
   instance_types = ["t3.small"]
 }
 
