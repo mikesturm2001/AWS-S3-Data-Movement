@@ -1,9 +1,3 @@
-# Create an IAM role for the control plane
-resource "aws_iam_role" "eks-cluster" {
-  name = "${var.name}-role"
-  assume_role_policy = data.aws_iam_policy_document.cluster_assume_role.json
-}
-
 # Allow EKS to assume the IAM role
 data "aws_iam_policy_document" "cluster_assume_role" {
   statement {
@@ -16,9 +10,20 @@ data "aws_iam_policy_document" "cluster_assume_role" {
   }
 }
 
+# Create an IAM role for the control plane
+resource "aws_iam_role" "eks-cluster" {
+  name = "${var.name}-role"
+  assume_role_policy = data.aws_iam_policy_document.cluster_assume_role.json
+}
+
 # Attach the permissions the IAM role needs
 resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role = aws_iam_role.eks-cluster.name
+}
+
+resource "aws_iam_role_policy_attachment" "AmazonEKSVPCResourceController" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
   role = aws_iam_role.eks-cluster.name
 }
 
@@ -36,7 +41,8 @@ resource "aws_eks_cluster" "cluster" {
   # the EKS Cluster. Otherwise, EKS will not be able to properly delete
   # EKS managed EC2 infrastructure such as Security Groups.
   depends_on = [
-    aws_iam_role_policy_attachment.AmazonEKSClusterPolicy
+    aws_iam_role_policy_attachment.AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.AmazonEKSVPCResourceController
   ]
 }
 
