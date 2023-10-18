@@ -1,5 +1,5 @@
 output "vpc_id" {
-  value = aws_vpc.my_vpc.id
+  value = aws_vpc.data_movement_vpc.id
   description = "The ID of the VPC"
 }
 
