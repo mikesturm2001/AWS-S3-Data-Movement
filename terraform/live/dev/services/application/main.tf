@@ -70,6 +70,7 @@ data "aws_eks_cluster_auth" "cluster" {
 module "data-movement" {
   source = "../../../../modules/services/k8s-app"
   name = "data-movement"
+  # "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.project_name}:${var.latest-Tag}"
   image = "157099750066.dkr.ecr.us-east-1.amazonaws.com/aws_s3_data_movement_repository:latest"
   replicas = 2
   container_port = 5000
