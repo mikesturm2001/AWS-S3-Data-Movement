@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "cluster_assume_role" {
 }
 
 # Attach the permissions the IAM role needs
-resource "aws_iam_role_policy_attachement" "AmazonEKSClusterPolicy" {
+resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam:aws:policy/AmazonEKSClusterPolicy"
   role = aws_iam_role.cluster.name
 }
