@@ -1,6 +1,6 @@
 # Create an IAM role for the control plane
-resource "aws_iam_role" "cluster" {
-  name = "${var.name}-cluster-role"
+resource "aws_iam_role" "eks-cluster" {
+  name = "${var.name}-role"
   assume_role_policy = data.aws_iam_policy_document.cluster_assume_role.json
 }
 
@@ -19,13 +19,13 @@ data "aws_iam_policy_document" "cluster_assume_role" {
 # Attach the permissions the IAM role needs
 resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role = aws_iam_role.cluster.name
+  role = aws_iam_role.eks-cluster.name
 }
 
 # Deploy the control plane
 resource "aws_eks_cluster" "cluster" {
   name     = var.name
-  role_arn = aws_iam_role.cluster.arn
+  role_arn = aws_iam_role.eks-cluster.arn
   version  = "1.28"
 
   vpc_config {
