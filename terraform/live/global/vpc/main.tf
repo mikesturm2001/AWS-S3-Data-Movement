@@ -33,7 +33,7 @@ locals {
 
 resource "aws_subnet" "public_subnet" {
   count          = 1
-  vpc_id         = aws_vpc.my_vpc.id
+  vpc_id         = aws_vpc.data_movement_vpc.id
   cidr_block     = "10.0.1.0/24"
   availability_zone = "us-east-1${local.availability_zones[count.index]}"
   map_public_ip_on_launch = true
@@ -41,7 +41,7 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_subnet" "private_subnets" {
   count = 2
-  vpc_id = aws_vpc.my_vpc.id
+  vpc_id = aws_vpc.data_movement_vpc.id
   cidr_block = "10.0.2.${count.index * 64}/26"  # Adjust CIDR block as needed
   availability_zone = "us-east-1${local.availability_zones[count.index+1]}"  # Choose a valid availability zone
   tags = {
@@ -51,7 +51,7 @@ resource "aws_subnet" "private_subnets" {
 
 resource "aws_vpc_endpoint" "s3_endpoints" {
   count = 2
-  vpc_id = aws_vpc.my_vpc.id
+  vpc_id = aws_vpc.data_movement_vpc.id
   service_name = "com.amazonaws.us-east-1.s3"
-  route_table_ids = [aws_vpc.my_vpc.default_route_table_id]
+  route_table_ids = [aws_vpc.data_movement_vpc.default_route_table_id]
 }
