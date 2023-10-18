@@ -12,3 +12,7 @@ output "private_subnet_ids" {
   value = [for subnet in aws_subnet.private_subnets : subnet.id]
   description = "The IDs of the private subnets"
 }
+
+output "nat_gateway_eip" {
+  value = aws_eip.nat_gateway.public_ip
+}
