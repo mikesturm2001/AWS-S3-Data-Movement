@@ -22,3 +22,8 @@ variable "instance_types" {
   description = "The types of EC2 instances to run in the node group"
   type = list(string)
 }
+
+variable "subnet_ids" {
+  description = "The IDs of the private subnets"
+  type = list(string)
+}

@@ -33,17 +33,6 @@ resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
   role = aws_iam_role.cluster.name
 }
 
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnets" "default" {
-  filter {
-    name = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
-
 # Deploy the control plane
 resource "aws_eks_cluster" "cluster" {
   name     = var.name
@@ -51,7 +40,7 @@ resource "aws_eks_cluster" "cluster" {
   version  = "1.21"
 
   vpc_config {
-    subnet_ids = data.aws_subnets.default.ids
+    subnet_ids = var.subnet_ids
   }
 
   # Ensure that IAM Role permissions are created before and deleted after
@@ -101,8 +90,8 @@ resource "aws_eks_node_group" "nodes" {
   cluster_name    = aws_eks_cluster.cluster.name
   node_group_name = var.name
   node_role_arn   = aws_iam_role.node_group.arn
-  subnet_ids      = data.aws_subnets.default.ids
-  instance_types = var.instance_types
+  subnet_ids      = var.subnet_ids
+  instance_types  = var.instance_types
 
   scaling_config {
     min_size     = var.min_size

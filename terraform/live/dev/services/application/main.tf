@@ -30,6 +30,16 @@ data "terraform_remote_state" "aws_ecr_repository" {
   }
 }
 
+# Fetch VPC information
+data "terrafrom_remote_state" "data_movement_vpc" {
+  backend = "s3"
+    config = {
+    bucket = "terraform-data-movement-state-1247"
+    key = "global/vpc/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
 data "aws_ecr_image" "app_image" {
   repository_name = data.terraform_remote_state.aws_ecr_repository.outputs.ecr_repository_name
   image_tag = "latest"
@@ -43,7 +53,7 @@ module "eks_cluster" {
   min_size = 1
   max_size = 2
   desired_size = 1
-
+  subnet_ids = data.terraform_remote_state.data_movement_vpc.output.private_subnet_ids
   instance_types = ["t3.small"]
 }
 
