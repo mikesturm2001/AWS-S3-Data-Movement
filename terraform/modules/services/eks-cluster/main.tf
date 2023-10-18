@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.0.0, < 2.0.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
+
 # Create an IAM role for the control plane
 resource "aws_iam_role" "cluster" {
   name = "${var.name}-cluster-role"

@@ -31,7 +31,7 @@ data "terraform_remote_state" "aws_ecr_repository" {
 }
 
 # Fetch VPC information
-data "terrafrom_remote_state" "data_movement_vpc" {
+data "terraform_remote_state" "data_movement_vpc" {
   backend = "s3"
     config = {
     bucket = "terraform-data-movement-state-1247"
