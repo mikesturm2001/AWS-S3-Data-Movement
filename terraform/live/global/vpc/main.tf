@@ -32,7 +32,7 @@ locals {
 }
 
 resource "aws_eip" "nat_gateway_eip" {
-  instance = aws_nat_gateway.nat_gateway.id
+  domain = "vpc"
 }
 
 resource "aws_subnet" "public_subnet" {
