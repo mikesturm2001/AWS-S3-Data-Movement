@@ -40,48 +40,78 @@ data "terraform_remote_state" "data_movement_vpc" {
   }
 }
 
+# Fetch S3 bucket information
+data "terraform_remote_state" "s3" {
+  backend = "s3"
+  config = {
+    bucket = "terraform-data-movement-state-1247"
+    key    = "global/s3/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
 data "aws_ecr_image" "app_image" {
   repository_name = data.terraform_remote_state.aws_ecr_repository.outputs.ecr_repository_name
   image_tag = "latest"
 }
 
 # Import main Python Application
-module "eks_cluster" {
-  source = "../../../../modules/services/eks-cluster"
+module "ecs-cluster" {
+  source = "../../../../modules/services/ecs-cluster"
 
-  name = "data-movement-eks-cluster"
-  min_size = 1
-  max_size = 2
+  name = "data-movement"
+  min_size = var.min_size
+  max_size = var.max_size
   desired_size = 1
   subnet_ids = data.terraform_remote_state.data_movement_vpc.outputs.private_subnet_ids
-  instance_types = ["t3.small"]
-}
-
-provider "kubernetes" {
-  host = module.eks_cluster.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks_cluster.cluster_certificate_authority[0].data)
-  token = data.aws_eks_cluster_auth.cluster.token
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks_cluster.cluster_name
-}
-
-module "data-movement" {
-  source = "../../../../modules/services/k8s-app"
-  name = "data-movement"
-  # "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.project_name}:${var.latest-Tag}"
+  instance_types = [ "t3.small" ]
   image = "157099750066.dkr.ecr.us-east-1.amazonaws.com/aws_s3_data_movement_repository:latest"
-  replicas = 2
+  s3_drop_zone_bucket = var.s3_drop_zone_bucket
+  s3_snowflake_bucket = var.s3_snowflake_bucket
+  sqs_queue_url = aws_sqs_queue.s3_event_queue.id
+  replicas = 1
   container_port = 5000
 
-  environment_variables = {
-    PROVIDER = "Terraform"
-  }
+  depends_on = [ aws_sqs_queue.s3_event_queue ]
+}
+
+# Import main Python Application
+#module "eks_cluster" {
+#  source = "../../../../modules/services/eks-cluster"
+
+#  name = "data-movement-eks-cluster"
+#  min_size = 1
+#  max_size = 2
+#  desired_size = 1
+#  subnet_ids = data.terraform_remote_state.data_movement_vpc.outputs.private_subnet_ids
+#  instance_types = ["t3.small"]
+#}
+
+#provider "kubernetes" {
+#  host = module.eks_cluster.cluster_endpoint
+#  cluster_ca_certificate = base64decode(module.eks_cluster.cluster_certificate_authority[0].data)
+#  token = data.aws_eks_cluster_auth.cluster.token
+#}
+
+#data "aws_eks_cluster_auth" "cluster" {
+#  name = module.eks_cluster.cluster_name
+#}
+
+#module "data-movement" {
+#  source = "../../../../modules/services/k8s-app"
+#  name = "data-movement"
+# "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.project_name}:${var.latest-Tag}"
+#  image = "157099750066.dkr.ecr.us-east-1.amazonaws.com/aws_s3_data_movement_repository:latest"
+#  replicas = 2
+#  container_port = 5000
+
+#  environment_variables = {
+#    PROVIDER = "Terraform"
+#  }
 
   # Only deploy the app after the cluster has been deployed
-  depends_on = [module.eks_cluster]
-}
+#  depends_on = [module.eks_cluster]
+#}
 
 # Create SNS topic
 resource "aws_sns_topic" "s3-landing-zone-sns-topic" {
