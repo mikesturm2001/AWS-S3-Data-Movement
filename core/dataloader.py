@@ -11,6 +11,10 @@ def read_queue():
     s3_drop_zone_bucket = os.environ.get("S3_DZ")
     s3_snowflake_bucket = os.environ.get("S3_SNOWFLAKE")
 
+    src = s3.Bucket(s3_drop_zone_bucket)
+    dst = s3.Bucket(s3_snowflake_bucket)
+
+    # Todo: refactor this to run while there are objects in the SQS queue vs "while true" infinite loop
     while True:
         try:
             # Receive messages from the SQS queue
@@ -30,7 +34,15 @@ def read_queue():
                     print(s3_event)
 
                     # Process the S3 event as needed
+                    # Todo: We want to use boto3 copy the object here https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3/client/copy_object.html
 
+
+                    # todo: we then need to generate a control file based on the metadata of the object
+
+
+                    # Todo: Publish a message to the destination Queue telling it to process the file
+
+                    
                     # Delete the message from the SQS queue
                     receipt_handle = message['ReceiptHandle']
                     sqs_client.delete_message(
