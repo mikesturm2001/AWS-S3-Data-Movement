@@ -40,6 +40,12 @@ resource "aws_s3_bucket_versioning" "enabled" {
   }
 }
 
+resource "aws_s3_bucket_notification" "bucket_notification" {
+  for_each = aws_s3_bucket.s3_buckets
+  bucket = each.value.id
+  eventbridge = true
+}
+
 # Enable encryption at rest by default
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
   for_each = aws_s3_bucket.s3_buckets
