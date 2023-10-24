@@ -5,20 +5,20 @@ import json
 from json import JSONDecodeError
 
 
-def decode_json_recursively(obj):
+def decode_json_recursively(source):
     try:
-        if isinstance(obj, list):
-            data = [decode_json_recursively(el) for el in obj]
-        elif isinstance(obj, dict):
-            data = obj
+        if isinstance(source, list):
+            data = [decode_json_recursively(list_item) for list_item in source]
+        elif isinstance(source, dict):
+            data = source
         else:
-            data = json.loads(obj)
+            data = json.loads(source)
 
         if isinstance(data, dict):
             for k, v in data.items():
                 data[k] = decode_json_recursively(v)
     except (JSONDecodeError, TypeError, AttributeError):
-        return obj
+        return source
     return data
 
 
