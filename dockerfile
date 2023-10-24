@@ -5,7 +5,7 @@ FROM python:3.8
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-COPY . /app
+COPY ./core/ /app
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
@@ -17,4 +17,4 @@ EXPOSE 80
 ENV NAME World
 
 # Run app.py when the container launches
-CMD ["python", "aws_s3_data_movement/core/dataloader.py"]
+CMD ["python", "dataloader.py"]

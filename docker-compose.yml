@@ -1,0 +1,11 @@
+version: "2"
+services:
+  app:
+    build:
+      # Build an image from the Dockerfile in the current directory
+      context: .
+    ports:
+      - 8080:80
+      - 5678:5678
+    env_file:
+      - .env

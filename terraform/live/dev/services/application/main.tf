@@ -131,7 +131,7 @@ resource "aws_cloudwatch_event_rule" "s3_event_rule" {
       eventSource = ["s3.amazonaws.com"],
       eventName   = ["PutObject", "CopyObject"]  # Add other events as needed
       requestParameters = {
-        bucketName = ["s3-landing-zone-12134477a"]
+        bucketName = ["s3-drop-zone-12134477a"]
       }
     }
   })
