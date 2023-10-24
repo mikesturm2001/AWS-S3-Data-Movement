@@ -19,6 +19,7 @@ services:
           - /var/run:/var/run
           # Mount the shared configuration directory, used by the AWS CLI and AWS SDKs
           # On Windows, this directory can be found at "%UserProfile%\.aws"
+          # On Mac / *nix this direcory can be found at $HOME/.aws/:/home/.aws/
           - ${UserProfile}/.aws/:/home/.aws/
         environment:
           # define the home folder; credentials will be read from $HOME/.aws
