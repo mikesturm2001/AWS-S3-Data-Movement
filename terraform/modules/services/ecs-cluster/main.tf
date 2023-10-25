@@ -82,34 +82,64 @@ resource "aws_cloudwatch_metric_alarm" "sqs_queue_alarm" {
   }
 }
 
-# Define Application Auto Scaling for scaling out
-resource "aws_appautoscaling_policy" "scale_out" {
-  name               = "scale-out-policy"
+# Define Application Auto Scaling for scaling
+resource "aws_appautoscaling_policy" "sqs_length_scale" {
+  name               = "sqs-length-policy"
   policy_type        = "TargetTrackingScaling"
   resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.s3_data_movement_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 
   target_tracking_scaling_policy_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "SQSApproximateNumberOfMessagesVisible"
-    }
     target_value = 1  # Scale out when there is at least one message
-  }
-}
+    
+    customized_metric_specification {
+        metrics {
+          label = "Get the queue size (the number of messages waiting to be processed)"
+          id = "m1"
+          
+          metric_stat {
+            metric {
+              metric_name = "ApproximateNumberOfMessagesVisible"
+              namespace = "AWS/SQS"
+              
+              dimensions {
+                name = "QueueName"
+                value = var.sqs_queue_name
+              }
+            }
+            
+            stat = "Sum"
+          }
+          return_data = false
+        }
+        
+        metrics {
+          label = "Get the ECS running task count (the number of currently running tasks)"
+          id = "m2"
 
-# Define Application Auto Scaling for scaling in
-resource "aws_appautoscaling_policy" "scale_in" {
-  name               = "scale-in-policy"
-  policy_type        = "TargetTrackingScaling"
-  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.s3_data_movement_service.name}"
-  scalable_dimension = "ecs:service:DesiredCount"
-  service_namespace  = "ecs"
+          metric_stat {
+            metric {
+              metric_name = "RunningTaskCount"
+              namespace = "ECS/ContainerInsights"
+              
+              dimensions {
+                name = "ClusterName"
+                value = aws_ecs_cluster.cluster.name
+              }
+            }
+            
+            stat = "Average"
+          }
+          return_data = false
+        }
 
-  target_tracking_scaling_policy_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "SQSApproximateNumberOfMessagesVisible"
+        metrics {
+          label = "Calculate the backlog per instance"
+          id = "e1"
+          expression = "m1 / m2"
+          return_data = true
+        }
     }
-    target_value = 0  # Scale in when there are no messages
   }
 }
