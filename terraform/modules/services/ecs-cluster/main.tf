@@ -57,38 +57,29 @@ resource "aws_ecs_service" "s3_data_movement_service" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.s3_data_movement.arn
   launch_type     = "FARGATE"  # Or "EC2" if using EC2 launch type
+  desired_count = 0
 
   network_configuration {
     subnets = var.subnet_ids
   }
 }
 
-# Define the CloudWatch alarm
-resource "aws_cloudwatch_metric_alarm" "sqs_queue_alarm" {
-  alarm_name          = "sqs-queue-alarm"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = 1
-  metric_name        = "ApproximateNumberOfMessagesVisible"
-  namespace          = "AWS/SQS"
-  period             = 60  # 1 minute
-  statistic          = "SampleCount"
-  threshold          = 1  # When there is at least one message
-  alarm_description  = "Scale ECS service based on SQS queue"
-
-  alarm_actions = [aws_appautoscaling_policy.sqs_length_scale.arn]
-
-  dimensions = {
-    QueueName = var.sqs_queue_name
-  }
+resource "aws_appautoscaling_target" "ecs_target" {
+  max_capacity       = 4
+  min_capacity       = 0
+  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.s3_data_movement_service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
 }
+
 
 # Define Application Auto Scaling for scaling
 resource "aws_appautoscaling_policy" "sqs_length_scale" {
   name               = "sqs-length-policy"
   policy_type        = "TargetTrackingScaling"
-  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.s3_data_movement_service.name}"
-  scalable_dimension = "ecs:service:DesiredCount"
-  service_namespace  = "ecs"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
 
   target_tracking_scaling_policy_configuration {
     target_value = 1  # Scale out when there is at least one message
