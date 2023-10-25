@@ -29,6 +29,9 @@ jobs:
     - name: Terraform plan
       working-directory: ./terraform/live/global/s3
       id: tf-plan
+      env:
+        s3_drop_zone_bucket: "s3-drop-zone-12134477a"
+        s3_snowflake_bucket: "snowflake-drop-zone-12134477a"
       run: terraform plan -out=tfplan
       
     - name: Terraform apply 

@@ -79,6 +79,7 @@ def read_queue():
             print(f"An error occurred: {str(e)}")
         count = count + 1
 
+
 def main():
     debugpy.listen(('0.0.0.0', 5678))
     debugpy.wait_for_client()

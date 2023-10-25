@@ -14,14 +14,24 @@ terraform {
 variable "bucket_names" {
   description = "List of S3 buckets used as drop zones for data movement"
   type    = list(string)
-  default = ["s3-drop-zone-12134477a", "snowflake-drop-zone-12134477a"]
+  default = [var.s3_drop_zone_bucket, var.s3_snowflake_bucket]
 }
 
-# Create S3 buckets using the variable
-resource "aws_s3_bucket" "s3_buckets" {
-  for_each = toset(var.bucket_names)
+# Create S3 buckets for drop zone
+resource "aws_s3_bucket" "s3-drop-zone" {
 
-  bucket = each.key
+  bucket = var.s3_drop_zone_bucket
+
+  # Prevent Terraform from attempting to recreate an existing bucket
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# Create S3 buckets for loading into snowflake
+resource "aws_s3_bucket" "s3-snowflake-zone" {
+
+  bucket = var.s3_snowflake_bucket
 
   # Prevent Terraform from attempting to recreate an existing bucket
   lifecycle {
