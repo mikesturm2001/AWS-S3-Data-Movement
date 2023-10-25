@@ -25,13 +25,15 @@ jobs:
     - name: Terraform init
       working-directory: ./terraform/live/global/s3
       run: terraform init
+    
+    - name: Set Terraform Variables
+      run: |
+        echo "TF_VAR_s3_drop_zone_bucket=s3-drop-zone-12134477a" >> $GITHUB_ENV
+        echo "TF_VAR_s3_snowflake_bucket=snowflake-drop-zone-12134477a" >> $GITHUB_ENV
 
     - name: Terraform plan
       working-directory: ./terraform/live/global/s3
       id: tf-plan
-      env:
-        s3_drop_zone_bucket: "s3-drop-zone-12134477a"
-        s3_snowflake_bucket: "snowflake-drop-zone-12134477a"
       run: terraform plan -out=tfplan
       
     - name: Terraform apply 
