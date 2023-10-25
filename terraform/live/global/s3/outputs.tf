@@ -40,5 +40,5 @@ output "snowflake_bucket_arn" {
 
 output "s3_bucket_arns" {
   description = "ARN of the S3 bucket for loading files to snowflake"
-  value = [aws_s3_bucket.s3_drop_zone_bucket.arn, aws_s3_bucket.s3-snowflake-zone.arn]  
+  value = [aws_s3_bucket.s3-drop-zone.arn, aws_s3_bucket.s3-snowflake-zone.arn]  
 }
