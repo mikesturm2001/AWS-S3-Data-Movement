@@ -52,12 +52,11 @@ resource "aws_ecs_task_definition" "s3_data_movement" {
 resource "aws_ecs_service" "s3_data_movement_service" {
   name            = "s3-data-movement-service"
   cluster         = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.my_app.arn
+  task_definition = aws_ecs_task_definition.s3_data_movement.arn
   launch_type     = "FARGATE"  # Or "EC2" if using EC2 launch type
 
   network_configuration {
     subnets = var.subnet_ids
-    security_groups = [aws_security_group.my_security_group.id]
   }
 }
 
