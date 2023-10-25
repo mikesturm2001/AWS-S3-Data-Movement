@@ -10,13 +10,7 @@ terraform {
   }
 }
 
-# Define a variable to hold the names of S3 buckets as a list
-variable "bucket_names" {
-  description = "List of S3 buckets used as drop zones for data movement"
-  type    = list(string)
-  default = [var.s3_drop_zone_bucket, var.s3_snowflake_bucket]
-}
-
+# Define a local variable to hold the names of S3 buckets as a list
 locals {
   s3_buckets = [var.s3_drop_zone_bucket, var.s3_snowflake_bucket]
 }
