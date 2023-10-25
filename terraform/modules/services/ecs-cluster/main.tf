@@ -75,7 +75,7 @@ resource "aws_cloudwatch_metric_alarm" "sqs_queue_alarm" {
   threshold          = 1  # When there is at least one message
   alarm_description  = "Scale ECS service based on SQS queue"
 
-  alarm_actions = [aws_appautoscaling_policy.scale_out.arn, aws_appautoscaling_policy.scale_in.arn]
+  alarm_actions = [aws_appautoscaling_policy.sqs_length_scale.arn]
 
   dimensions = {
     QueueName = var.sqs_queue_name
