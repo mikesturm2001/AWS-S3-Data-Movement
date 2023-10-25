@@ -54,6 +54,11 @@ variable "environment_variables" {
     default = {}
 }
 
+variable "sqs_queue_name" {
+  description = "SQS Queue name"
+  type = string
+}
+
 variable "sqs_queue_url" {
   description = "SQS Queue for S3 put notifications"
   type = string

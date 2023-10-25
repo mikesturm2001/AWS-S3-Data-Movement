@@ -61,25 +61,53 @@ resource "aws_ecs_service" "s3_data_movement_service" {
   }
 }
 
-# Attach a load balancer if needed
-resource "aws_lb" "s3_data_movement_lb" {
-  name               = "s3_data_movement_lb"
-  internal           = false
-  load_balancer_type = "application"
+# Define the CloudWatch alarm
+resource "aws_cloudwatch_metric_alarm" "sqs_queue_alarm" {
+  alarm_name          = "sqs-queue-alarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = 1
+  metric_name        = "ApproximateNumberOfMessagesVisible"
+  namespace          = "AWS/SQS"
+  period             = 60  # 1 minute
+  statistic          = "SampleCount"
+  threshold          = 1  # When there is at least one message
+  alarm_description  = "Scale ECS service based on SQS queue"
 
-  enable_deletion_protection = false
+  alarm_actions = [aws_appautoscaling_policy.scale_out.arn, aws_appautoscaling_policy.scale_in.arn]
 
-  subnets         = var.subnet_ids
-  security_groups = [aws_security_group.my_security_group.id]
+  dimensions = {
+    QueueName = var.sqs_queue_name
+  }
 }
 
-resource "aws_lb_listener" "s3_data_movement_listener" {
-  load_balancer_arn = aws_lb.s3_data_movement_lb.arn
-  port              = 80
-  protocol          = "HTTP"
+# Define Application Auto Scaling for scaling out
+resource "aws_appautoscaling_policy" "scale_out" {
+  name               = "scale-out-policy"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.s3_data_movement_service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
 
-  default_action {
-    type             = "fixed-response"
-    fixed_response_type = "200"
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "SQSApproximateNumberOfMessagesVisible"
+    }
+    target_value = 1  # Scale out when there is at least one message
+  }
+}
+
+# Define Application Auto Scaling for scaling in
+resource "aws_appautoscaling_policy" "scale_in" {
+  name               = "scale-in-policy"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.s3_data_movement_service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "SQSApproximateNumberOfMessagesVisible"
+    }
+    target_value = 0  # Scale in when there are no messages
   }
 }

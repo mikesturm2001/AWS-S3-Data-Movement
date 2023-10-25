@@ -62,14 +62,15 @@ module "ecs-cluster" {
   name = "data-movement"
   min_size = var.min_size
   max_size = var.max_size
-  desired_size = 1
+  desired_size = 0
   subnet_ids = data.terraform_remote_state.data_movement_vpc.outputs.private_subnet_ids
   instance_types = [ "t3.small" ]
   image = "157099750066.dkr.ecr.us-east-1.amazonaws.com/aws_s3_data_movement_repository:latest"
   s3_drop_zone_bucket = var.s3_drop_zone_bucket
   s3_snowflake_bucket = var.s3_snowflake_bucket
   sqs_queue_url = aws_sqs_queue.s3_event_queue.id
-  replicas = 1
+  sqs_queue_name = aws_sqs_queue.s3_event_queue.name
+  replicas = 0
   container_port = 5000
 
   depends_on = [ aws_sqs_queue.s3_event_queue ]
@@ -126,12 +127,10 @@ resource "aws_cloudwatch_event_rule" "s3_event_rule" {
 
   event_pattern = jsonencode({
     source      = ["aws.s3"],
-    detail_type = ["AWS API Call via CloudTrail"],
+    detail_type = ["Object Created"],
     detail      = {
-      eventSource = ["s3.amazonaws.com"],
-      eventName   = ["PutObject", "CopyObject"]  # Add other events as needed
-      requestParameters = {
-        bucketName = ["s3-drop-zone-12134477a"]
+      bucket = {
+        name = [var.s3_drop_zone_bucket]
       }
     }
   })
