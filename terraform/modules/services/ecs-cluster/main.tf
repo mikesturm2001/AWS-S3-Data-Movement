@@ -23,9 +23,8 @@ resource "aws_ecs_cluster" "cluster" {
 # Create an ECS task definition
 resource "aws_ecs_task_definition" "s3_data_movement" {
   family = "s3_data_movement"
-
   network_mode = "awsvpc"
-
+  requires_compatibilities = ["FARGATE"]
   execution_role_arn = aws_iam_role.ecs-task-role.arn
 
   # Specify your container definitions with environment variables here
