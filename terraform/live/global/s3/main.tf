@@ -17,6 +17,10 @@ variable "bucket_names" {
   default = [var.s3_drop_zone_bucket, var.s3_snowflake_bucket]
 }
 
+locals {
+  s3_buckets = [var.s3_drop_zone_bucket, var.s3_snowflake_bucket]
+}
+
 # Create S3 buckets for drop zone
 resource "aws_s3_bucket" "s3-drop-zone" {
 
@@ -41,7 +45,7 @@ resource "aws_s3_bucket" "s3-snowflake-zone" {
 
 # Enable versioning, server-side encryption, and public access block for each S3 bucket
 resource "aws_s3_bucket_versioning" "enabled" {
-  for_each = aws_s3_bucket.s3_buckets
+  for_each = local.s3_buckets
 
   bucket = each.value.id
 
@@ -51,14 +55,14 @@ resource "aws_s3_bucket_versioning" "enabled" {
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
-  for_each = aws_s3_bucket.s3_buckets
+  for_each = local.s3_buckets
   bucket = each.value.id
   eventbridge = true
 }
 
 # Enable encryption at rest by default
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
-  for_each = aws_s3_bucket.s3_buckets
+  for_each = local.s3_buckets
 
   bucket = each.value.id
 
@@ -71,7 +75,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
 
 # Block public access to the S3 buckets
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  for_each = aws_s3_bucket.s3_buckets
+  for_each = local.s3_buckets
 
   bucket = each.value.id
 
