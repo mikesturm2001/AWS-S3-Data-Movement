@@ -12,7 +12,7 @@ terraform {
 
 # Define a local variable to hold the names of S3 buckets as a list
 locals {
-  s3_buckets = [var.s3_drop_zone_bucket, var.s3_snowflake_bucket]
+  s3_buckets = tolist([var.s3_drop_zone_bucket, var.s3_snowflake_bucket])
 }
 
 # Create S3 buckets for drop zone
