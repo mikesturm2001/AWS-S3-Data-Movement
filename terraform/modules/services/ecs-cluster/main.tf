@@ -27,13 +27,15 @@ resource "aws_ecs_task_definition" "s3_data_movement" {
   requires_compatibilities = ["FARGATE"]
   execution_role_arn = aws_iam_role.ecs-task-role.arn
 
+  memory = 512   # Specify the memory setting for the container (in MiB)
+  cpu = 256      # Specify the CPU setting for the container (in units)
+
   # Specify your container definitions with environment variables here
   container_definitions = jsonencode([
     {
       name  = "s3_data_movement"
       image = var.image
-      memory = 512,   # Specify the memory setting for the container (in MiB)
-      cpu = 256,      # Specify the CPU setting for the container (in units)
+
       environment = [
         { name = "SQS_QUEUE_URL", value = var.sqs_queue_url },
         { name = "S3_DZ", value = var.s3_drop_zone_bucket },
