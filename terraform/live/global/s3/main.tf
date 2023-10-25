@@ -10,11 +10,6 @@ terraform {
   }
 }
 
-# Define a local variable to hold the names of S3 buckets as a list
-locals {
-  s3_buckets = tolist([var.s3_drop_zone_bucket, var.s3_snowflake_bucket])
-}
-
 # Create S3 buckets for drop zone
 resource "aws_s3_bucket" "s3-drop-zone" {
 
@@ -36,6 +31,15 @@ resource "aws_s3_bucket" "s3-snowflake-zone" {
     prevent_destroy = true
   }
 }
+
+# Define a local variable to hold the names of S3 buckets as a list
+locals {
+  s3_buckets = {
+    src = aws_s3_bucket.s3-drop-zone, 
+    dst = aws_s3_bucket.s3-snowflake-zone
+  }
+}
+
 
 # Enable versioning, server-side encryption, and public access block for each S3 bucket
 resource "aws_s3_bucket_versioning" "enabled" {
