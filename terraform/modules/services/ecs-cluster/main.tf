@@ -15,6 +15,69 @@ resource "aws_iam_role" "ecs-task-role" {
   })
 }
 
+# Create and ECR access policy
+resource "aws_iam_policy" "ecr_access_policy" {
+  name        = "ECRAccessPolicy"
+  description = "ECR Access Policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:BatchCheckLayerAvailability",
+        ],
+        Effect = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "s3_access_policy" {
+  name        = "S3AccessPolicy"
+  description = "S3 Access Policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListMultipartUploadParts",
+          "s3:AbortMultipartUpload",
+        ],
+        Effect = "Allow",
+        Resource = [
+          var.s3_drop_zone_bucket_arn,
+          var.s3_snowflake_bucket_arn
+        ]
+      }
+    ]
+  })
+}
+
+# Add the policies to the ECS Task Role
+resource "aws_iam_policy_attachment" "ecr_access_attachment" {
+  name       = "ECRAccessAttachment"
+  policy_arn = aws_iam_policy.ecr_access_policy.arn
+  roles      = [aws_iam_role.ecs_task_role.name]
+}
+
+resource "aws_iam_policy_attachment" "s3_access_attachment" {
+  name       = "S3AccessAttachment"
+  policy_arn = aws_iam_policy.s3_access_policy.arn
+  roles      = [aws_iam_role.ecs_task_role.name]
+}
+
 # Create an ECS cluster
 resource "aws_ecs_cluster" "cluster" {
   name = var.name

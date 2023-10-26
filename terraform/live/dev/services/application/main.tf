@@ -67,7 +67,9 @@ module "ecs-cluster" {
   instance_types = [ "t3.small" ]
   image = "157099750066.dkr.ecr.us-east-1.amazonaws.com/aws_s3_data_movement_repository:latest"
   s3_drop_zone_bucket = var.s3_drop_zone_bucket
+  s3_drop_zone_bucket_arn = data.terraform_remote_state.s3.outputs.drop_zone_bucket_arn
   s3_snowflake_bucket = var.s3_snowflake_bucket
+  s3_snowflake_bucket_arn = data.terraform_remote_state.s3.outputs.snowflake_bucket_arn
   sqs_queue_url = aws_sqs_queue.s3_event_queue.id
   sqs_queue_name = aws_sqs_queue.s3_event_queue.name
   replicas = 0

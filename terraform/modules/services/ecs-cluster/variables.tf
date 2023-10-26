@@ -68,3 +68,13 @@ variable "s3_snowflake_bucket" {
     description = "S3 bucket to load files to Snowflake"
     type = string
 }
+
+variable "s3_drop_zone_bucket_arn" {
+  description = "ARN of S3 bucket where files are dropped"
+  type = string  
+}
+
+variable "s3_snowflake_bucket_arn" {
+    description = "ARN of S3 bucket to load files to Snowflake"
+    type = string
+}
