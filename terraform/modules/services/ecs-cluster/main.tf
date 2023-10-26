@@ -1,5 +1,5 @@
 # Create an IAM role for your ECS tasks
-resource "aws_iam_role" "ecs-task-role" {
+resource "aws_iam_role" "ecs_task_role" {
   name = "${var.name}-ecs-task-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -88,7 +88,7 @@ resource "aws_ecs_task_definition" "s3_data_movement" {
   family = "s3_data_movement"
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn = aws_iam_role.ecs-task-role.arn
+  execution_role_arn = aws_iam_role.ecs_task_role.arn
 
   memory = 512   # Specify the memory setting for the container (in MiB)
   cpu = 256      # Specify the CPU setting for the container (in units)
