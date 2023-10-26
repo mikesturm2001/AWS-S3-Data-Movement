@@ -136,6 +136,7 @@ resource "aws_cloudwatch_event_rule" "s3_event_rule" {
   })
 }
 
+#  Create the event bridge rule
 resource "aws_cloudwatch_event_target" "target" {
   rule      = aws_cloudwatch_event_rule.s3_event_rule.name
   target_id = "sns-target"
@@ -143,6 +144,33 @@ resource "aws_cloudwatch_event_target" "target" {
   # Specify your target action here (e.g., SNS topic, Lambda function, etc.)
   # Example: SNS Topic
   arn = aws_sns_topic.s3-landing-zone-sns-topic.arn
+}
+
+
+# Attach a policy to the SNS topic to allow event brdige rules to publish to it
+resource "aws_sns_topic_policy" "eventbridge_publish_policy" {
+  arn  = aws_sns_topic.s3-landing-zone-sns-topic.arn
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Id      = "EventBridgePublishPolicy",
+    Statement = [
+      {
+        Sid       = "AllowEventBridgeToPublish",
+        Effect    = "Allow",
+        Principal = {
+          Service = "events.amazonaws.com"
+        },
+        Action    = "SNS:Publish",
+        Resource  = aws_sns_topic.s3-landing-zone-sns-topic.arn,
+        Condition = {
+          ArnLike = {
+            "aws:SourceArn" = aws_cloudwatch_event_rule.s3_event_rule.arn
+          }
+        }
+      }
+    ]
+  })
 }
 
 # Create an SQS queue
