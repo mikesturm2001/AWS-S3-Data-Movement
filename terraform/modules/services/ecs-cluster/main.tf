@@ -32,29 +32,6 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
-# Create and ECR access policy
-resource "aws_iam_policy" "ecr_access_policy" {
-  name        = "ECRAccessPolicy"
-  description = "ECR Access Policy"
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = [
-          "ecr:GetAuthorizationToken",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:GetRepositoryPolicy",
-          "ecr:DescribeRepositories",
-          "ecr:ListImages",
-          "ecr:BatchCheckLayerAvailability",
-        ],
-        Effect = "Allow",
-        Resource = "*"
-      }
-    ]
-  })
-}
 
 resource "aws_iam_policy" "s3_access_policy" {
   name        = "S3AccessPolicy"
@@ -77,6 +54,16 @@ resource "aws_iam_policy" "s3_access_policy" {
           var.s3_drop_zone_bucket_arn,
           var.s3_snowflake_bucket_arn
         ]
+      },
+            {
+        Action = [
+          "sqs:SendMessage",
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueUrl",
+        ],
+        Effect = "Allow",
+        Resource = var.sqs_queue_arn
       }
     ]
   })
@@ -122,7 +109,13 @@ resource "aws_ecs_task_definition" "s3_data_movement" {
     {
       name  = "s3_data_movement"
       image = var.image
-
+      log_configuration = {
+        log_driver = "awslogs"
+        options = {
+          "awslogs-group" = aws_cloudwatch_log_group.ecs_task_log_group.name
+          "awslogs-region" = "us-east-1"  # Set your region
+        }
+      }
       environment = [
         { name = "SQS_QUEUE_URL", value = var.sqs_queue_url },
         { name = "S3_DZ", value = var.s3_drop_zone_bucket },
@@ -207,4 +200,10 @@ resource "aws_appautoscaling_policy" "sqs_length_scale" {
       }  
     }
   }
+}
+
+# Create an AWS CloudWatch Log Group
+resource "aws_cloudwatch_log_group" "ecs_task_log_group" {
+  name              = "${var.name}-ecs_task_log_group"  # Choose a unique name for your log group
+  retention_in_days = 1
 }
