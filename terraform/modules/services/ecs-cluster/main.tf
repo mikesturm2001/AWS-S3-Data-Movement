@@ -177,7 +177,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_out_alarm" {
   metric_name         = "ApproximateNumberOfMessagesVisible"
   namespace           = "AWS/SQS"
   period              = 60
-  statistic           = "SampleCount"
+  statistic           = "Sum"
   threshold           = 1  # Trigger when there's at least one message
   alarm_description   = "Trigger scaling out when there are messages in the SQS queue"
   alarm_actions       = [aws_appautoscaling_policy.scale_out_policy.arn]  # Specify the ARN of your scaling policy
@@ -194,7 +194,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_in_alarm" {
   metric_name         = "ApproximateNumberOfMessagesVisible"
   namespace           = "AWS/SQS"
   period              = 60
-  statistic           = "SampleCount"
+  statistic           = "Sum"
   threshold           = 0  # Trigger when there are no messages
   alarm_actions       = [aws_appautoscaling_policy.scale_in_policy.arn]  # Specify the ARN of your scaling policy
 
