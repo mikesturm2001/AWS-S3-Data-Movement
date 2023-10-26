@@ -59,6 +59,11 @@ variable "sqs_queue_url" {
   type = string
 }
 
+variable "sqs_queue_arn" {
+  description = "SQS Queue ARN"
+  type = string
+}
+
 variable "s3_drop_zone_bucket" {
   description = "S3 bucket where files are dropped"
   type = string
