@@ -217,13 +217,13 @@ resource "aws_appautoscaling_policy" "scale_out_policy" {
     metric_aggregation_type = "Average"
 
     step_adjustment {
-      metric_interval_lower_bound = 1
-      metric_interval_upper_bound = 15
+      metric_interval_lower_bound = 0
+      metric_interval_upper_bound = 9
       scaling_adjustment = 1
     }
 
     step_adjustment {
-      metric_interval_lower_bound = 15
+      metric_interval_lower_bound = 10
       scaling_adjustment = 2
     }
   }
