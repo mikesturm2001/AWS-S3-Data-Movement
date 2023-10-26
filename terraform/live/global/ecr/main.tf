@@ -18,27 +18,26 @@ resource "aws_ecr_repository" "aws_s3_data_movement_repository" {
   name = "aws_s3_data_movement_repository" 
 }
 
-# Create an ECR repository policy to allow ECS tasks to pull images
-data "aws_iam_policy_document" "ecr_repository_policy" {
-  statement {
-    actions   = [
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetAuthorizationToken",
-      "ecr:GetImage",
-      "ecr:BatchGetImage",
-    ]
-    resources = [aws_ecr_repository.aws_s3_data_movement_repository.arn]
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-# Attach the ECR repository policy to the ECR repository
+# Define an ECR repository policy that allows only ECS tasks to pull images
 resource "aws_ecr_repository_policy" "ecr_policy" {
-  repository  = aws_ecr_repository.aws_s3_data_movement_repository.name
-  policy      = data.aws_iam_policy_document.ecr_repository_policy.json
+  repository = aws_ecr_repository.aws_s3_data_movement_repository.name
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        },
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetAuthorizationToken",
+          "ecr:GetImage",
+          "ecr:BatchGetImage",
+        ]
+      }
+    ]
+  })
 }
 
