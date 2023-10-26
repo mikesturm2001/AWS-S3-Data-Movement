@@ -24,16 +24,18 @@ def decode_json_recursively(source):
 
 
 def read_queue():
-    
-    # Set up the AWS S3 and SQS clients #need to wrap in error handling
-    s3 = boto3.resource('s3')
-    sqs_client = boto3.client('sqs', region_name='us-east-1')
 
-    queue_url = os.environ.get("SQS_QUEUE_URL")
-    s3_drop_zone_bucket = os.environ.get("S3_DZ")
-    s3_snowflake_bucket = os.environ.get("S3_SNOWFLAKE")
+    try:
+        # Set up the AWS S3 and SQS clients #need to wrap in error handling
+        s3 = boto3.resource('s3')
+        sqs_client = boto3.client('sqs', region_name='us-east-1')
 
-    count = 1
+        queue_url = os.environ.get("SQS_QUEUE_URL")
+        s3_drop_zone_bucket = os.environ.get("S3_DZ")
+        s3_snowflake_bucket = os.environ.get("S3_SNOWFLAKE")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        logging.error(f"An error occurred: {str(e)}")
 
     while True:
         try:
@@ -47,6 +49,7 @@ def read_queue():
             )
 
             if 'Messages' in response:
+                logging.info("Messages Read")
                 for message in response['Messages']:
                     # Extract S3 notification details from the message
                     s3_event = message['Body']
@@ -78,7 +81,7 @@ def read_queue():
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
-        count = count + 1
+            logging.error(f"An error occurred: {str(e)}")
 
 
 def main():
