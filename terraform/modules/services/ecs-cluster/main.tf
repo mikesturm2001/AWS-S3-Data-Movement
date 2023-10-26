@@ -111,12 +111,12 @@ resource "aws_ecs_task_definition" "s3_data_movement" {
     {
       name  = "s3_data_movement"
       image = var.image
-      log_configuration = {
-        log_driver = "awslogs"
+      logConfiguration  = {
+        logDriver = "awslogs"
         options = {
-          "awslogs-group" = "${aws_cloudwatch_log_group.ecs_task_log_group.name}"
-          "awslogs-region" = "us-east-1"  # Set your region
-          "awslogs-stream-prefix": "ecs"
+          awslogs-group = aws_cloudwatch_log_group.ecs_task_log_group.name
+          awslogs-region = "us-east-1"  # Set your region
+          awslogs-stream-prefix = "ecs"
         }
       }
       environment = [
@@ -124,10 +124,10 @@ resource "aws_ecs_task_definition" "s3_data_movement" {
         { name = "S3_DZ", value = var.s3_drop_zone_bucket },
         { name = "S3_SNOWFLAKE", value = var.s3_snowflake_bucket }
       ]
-      port_mappings = [
+      portMappings = [
         {
-          container_port = var.container_port
-          host_port      = var.container_port
+          containerPort = var.container_port
+          hostPost      = var.container_port
         }
       ]
     }
