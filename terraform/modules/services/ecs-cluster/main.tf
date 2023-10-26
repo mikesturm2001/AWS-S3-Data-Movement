@@ -154,7 +154,7 @@ resource "aws_ecs_service" "s3_data_movement_service" {
 
   network_configuration {
     subnets = var.subnet_ids
-    security_groups = [aws_security_group.fargate_security_group]
+    security_groups = [aws_security_group.fargate_security_group.id]
   }
 }
 
