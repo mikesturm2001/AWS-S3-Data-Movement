@@ -51,8 +51,8 @@ resource "aws_iam_policy" "ecr_access_policy" {
         ],
         Effect = "Allow",
         Resource = [
-          var.s3_drop_zone_bucket_arn,
-          var.s3_snowflake_bucket_arn
+          "${var.s3_drop_zone_bucket_arn}/*",
+          "${var.s3_snowflake_bucket_arn}/*"
         ]
       },
       {

@@ -66,9 +66,8 @@ def read_queue():
                         'Key': src_obj.key
                     }
 
+                    logging.info(f"Moving object: {object_key} from source bucket {s3_drop_zone_bucket} to destination bucket {s3_snowflake_bucket}")
                     s3.meta.client.copy(drop_zone_file, s3_snowflake_bucket, object_key)
-
-                    
 
                     # Delete the message from the SQS queue
                     receipt_handle = message['ReceiptHandle']
