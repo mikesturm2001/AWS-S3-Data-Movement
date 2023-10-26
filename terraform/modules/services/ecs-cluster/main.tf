@@ -114,8 +114,9 @@ resource "aws_ecs_task_definition" "s3_data_movement" {
       log_configuration = {
         log_driver = "awslogs"
         options = {
-          "awslogs-group" = aws_cloudwatch_log_group.ecs_task_log_group.name
+          "awslogs-group" = "${aws_cloudwatch_log_group.ecs_task_log_group.name}"
           "awslogs-region" = "us-east-1"  # Set your region
+          "awslogs-stream-prefix": "ecs"
         }
       }
       environment = [
