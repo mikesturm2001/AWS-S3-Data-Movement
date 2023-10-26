@@ -127,7 +127,7 @@ resource "aws_cloudwatch_event_rule" "s3_event_rule" {
 
   event_pattern = jsonencode({
     source      = ["aws.s3"],
-    detail_type = ["Object Created"],
+    detail-type = ["Object Created"],
     detail      = {
       bucket = {
         name = [var.s3_drop_zone_bucket]
