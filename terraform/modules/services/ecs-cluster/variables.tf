@@ -28,25 +28,20 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-variable "image" {
-    description = "The Docker image to run"
-    type = string
-}
-
 variable "container_port" {
-    description = "The port the Docker image listens on"
-    type = number
+  description = "The port the Docker image listens on"
+  type = number
 }
 
 variable "replicas" {
-    description = "How many replicas to run"
-    type = number
+  description = "How many replicas to run"
+  type = number
 }
 
 variable "environment_variables" {
-    description = "Environment variables to set for the app"
-    type = map(string)
-    default = {}
+  description = "Environment variables to set for the app"
+  type = map(string)
+  default = {}
 }
 
 variable "sqs_queue_name" {
@@ -65,8 +60,8 @@ variable "s3_drop_zone_bucket" {
 }
 
 variable "s3_snowflake_bucket" {
-    description = "S3 bucket to load files to Snowflake"
-    type = string
+  description = "S3 bucket to load files to Snowflake"
+  type = string
 }
 
 variable "s3_drop_zone_bucket_arn" {
@@ -75,6 +70,16 @@ variable "s3_drop_zone_bucket_arn" {
 }
 
 variable "s3_snowflake_bucket_arn" {
-    description = "ARN of S3 bucket to load files to Snowflake"
-    type = string
+  description = "ARN of S3 bucket to load files to Snowflake"
+  type = string
+}
+
+variable "ecr_repository_arn" {
+  description = "ARN of the ECR Repo images should be pulled from"
+  type = string
+}
+
+variable "image" {
+  description = "The Docker image to run"
+  type = string
 }

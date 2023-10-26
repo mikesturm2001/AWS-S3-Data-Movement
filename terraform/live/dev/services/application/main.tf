@@ -66,6 +66,7 @@ module "ecs-cluster" {
   subnet_ids = data.terraform_remote_state.data_movement_vpc.outputs.private_subnet_ids
   instance_types = [ "t3.small" ]
   image = "157099750066.dkr.ecr.us-east-1.amazonaws.com/aws_s3_data_movement_repository:latest"
+  ecr_repository_arn = data.terraform_remote_state.aws_ecr_repository.outputs.ecr_repository_arn
   s3_drop_zone_bucket = var.s3_drop_zone_bucket
   s3_drop_zone_bucket_arn = data.terraform_remote_state.s3.outputs.drop_zone_bucket_arn
   s3_snowflake_bucket = var.s3_snowflake_bucket

@@ -33,7 +33,7 @@ resource "aws_iam_policy" "ecr_access_policy" {
           "ecr:BatchCheckLayerAvailability",
         ],
         Effect = "Allow",
-        Resource = "*"
+        Resource = var.ecr_repository_arn
       }
     ]
   })
