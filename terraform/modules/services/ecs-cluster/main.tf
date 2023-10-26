@@ -169,74 +169,81 @@ resource "aws_appautoscaling_target" "ecs_target" {
   service_namespace  = "ecs"
 }
 
+# Create scaling step functions 
+resource "aws_cloudwatch_metric_alarm" "scale_out_alarm" {
+  alarm_name          = "sqs-scale-out-alarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = 60
+  statistic           = "SampleCount"
+  threshold           = 1  # Trigger when there's at least one message
+  alarm_description   = "Trigger scaling out when there are messages in the SQS queue"
+  alarm_actions       = [aws_appautoscaling_policy.scale_out_policy.arn]  # Specify the ARN of your scaling policy
+  dimensions = {
+    QueueName = var.sqs_queue_name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "scale_in_alarm" {
+  alarm_name          = "sqs-scale-in-alarm"
+  alarm_description   = "Alarm for scaling in when the SQS queue is empty"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = 60
+  statistic           = "SampleCount"
+  threshold           = 0  # Trigger when there are no messages
+  alarm_actions       = [aws_appautoscaling_policy.scale_in_policy.arn]  # Specify the ARN of your scaling policy
+
+  dimensions = {
+    QueueName = var.sqs_queue_name
+  }
+}
 
 # Define Application Auto Scaling for scaling  up
-resource "aws_appautoscaling_policy" "sqs_scale_up" {
-  name               = "sqs-length-up-policy"
-  policy_type        = "TargetTrackingScaling"
+resource "aws_appautoscaling_policy" "scale_out_policy" {
+  name               = "scale-out-policy"
+  policy_type        = "StepScaling"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
   service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
 
-  target_tracking_scaling_policy_configuration {
-    target_value = 1  # Scale out when there is at least one message
-    
-    customized_metric_specification {
-      metrics {
-        label = "Get the queue size (the number of messages waiting to be processed)"
-        id = "m1"
-          
-        metric_stat {
-          metric {
-            metric_name = "ApproximateNumberOfMessagesVisible"
-            namespace = "AWS/SQS"
-            dimensions {
-              name = "QueueName"
-              value = var.sqs_queue_name
-            }
-          }
-            
-          stat = "Sum"
-        }
-        return_data = true
-      }  
+  step_scaling_policy_configuration {
+    adjustment_type = "ChangeInCapacity"
+    cooldown        = 60
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      metric_interval_lower_bound = 1
+      metric_interval_upper_bound = 15
+      scaling_adjustment = 1
     }
   }
 }
 
-# Define Application Auto Scaling for scaling down
-resource "aws_appautoscaling_policy" "sqs_scale_down" {
-  name               = "sqs-length-down-policy"
-  policy_type        = "TargetTrackingScaling"
+# Define Application Auto Scaling for scaling  up
+resource "aws_appautoscaling_policy" "scale_in_policy" {
+  name               = "scale-in-policy"
+  policy_type        = "StepScaling"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
   service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
 
-  target_tracking_scaling_policy_configuration {
-    target_value = 0  # Scale in when there are no messages
-    
-    customized_metric_specification {
-      metrics {
-        label = "Get the queue size (the number of messages waiting to be processed)"
-        id = "m2"
-          
-        metric_stat {
-          metric {
-            metric_name = "ApproximateNumberOfMessagesVisible"
-            namespace = "AWS/SQS"
-            dimensions {
-              name = "QueueName"
-              value = var.sqs_queue_name
-            }
-          }
-            
-          stat = "Sum"
-        }
-        return_data = true
-      }  
+  step_scaling_policy_configuration {
+    adjustment_type = "ChangeInCapacity"
+    cooldown        = 0
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      scaling_adjustment = -1
+      metric_interval_upper_bound = 0
     }
   }
 }
+
 
 
 # Create an AWS CloudWatch Log Group
