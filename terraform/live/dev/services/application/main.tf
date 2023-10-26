@@ -63,6 +63,7 @@ module "ecs-cluster" {
   min_size = var.min_size
   max_size = var.max_size
   desired_size = 0
+  vpc_id = data.terraform_remote_state.data_movement_vpc.outputs.vpc_id
   subnet_ids = data.terraform_remote_state.data_movement_vpc.outputs.private_subnet_ids
   instance_types = [ "t3.small" ]
   image = "157099750066.dkr.ecr.us-east-1.amazonaws.com/aws_s3_data_movement_repository:latest"

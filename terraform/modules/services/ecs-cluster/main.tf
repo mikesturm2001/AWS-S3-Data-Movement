@@ -131,6 +131,20 @@ resource "aws_ecs_task_definition" "s3_data_movement" {
   ])
 }
 
+resource "aws_security_group" "fargate_security_group" {
+  name_prefix   = "${var.name}-fargate-sg"
+  description   = "Security group for Fargate tasks"
+  vpc_id        = var.vpc_id
+
+  # Outbound rule allowing all outgoing traffic to anywhere
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" # All protocols
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 # Create an ECS service
 resource "aws_ecs_service" "s3_data_movement_service" {
   name            = "s3-data-movement-service"
@@ -140,6 +154,7 @@ resource "aws_ecs_service" "s3_data_movement_service" {
 
   network_configuration {
     subnets = var.subnet_ids
+    security_groups = [aws_security_group.fargate_security_group]
   }
 }
 

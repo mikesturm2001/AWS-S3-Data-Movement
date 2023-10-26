@@ -23,6 +23,11 @@ variable "instance_types" {
   type = list(string)
 }
 
+variable "vpc_id" {
+  description = "The VPC the application will run in"
+  type = string
+}
+
 variable "subnet_ids" {
   description = "The IDs of the private subnets"
   type = list(string)
