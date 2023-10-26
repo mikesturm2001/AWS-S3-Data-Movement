@@ -154,7 +154,6 @@ resource "aws_ecs_service" "s3_data_movement_service" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.s3_data_movement.arn
   launch_type     = "FARGATE"  # Or "EC2" if using EC2 launch type
-  desired_count = 0
 
   network_configuration {
     subnets = var.subnet_ids
@@ -171,9 +170,9 @@ resource "aws_appautoscaling_target" "ecs_target" {
 }
 
 
-# Define Application Auto Scaling for scaling
-resource "aws_appautoscaling_policy" "sqs_length_scale" {
-  name               = "sqs-length-policy"
+# Define Application Auto Scaling for scaling  up
+resource "aws_appautoscaling_policy" "sqs_scale_up" {
+  name               = "sqs-length-up-policy"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.ecs_target.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
@@ -191,7 +190,6 @@ resource "aws_appautoscaling_policy" "sqs_length_scale" {
           metric {
             metric_name = "ApproximateNumberOfMessagesVisible"
             namespace = "AWS/SQS"
-              
             dimensions {
               name = "QueueName"
               value = var.sqs_queue_name
@@ -205,6 +203,41 @@ resource "aws_appautoscaling_policy" "sqs_length_scale" {
     }
   }
 }
+
+# Define Application Auto Scaling for scaling down
+resource "aws_appautoscaling_policy" "sqs_scale_down" {
+  name               = "sqs-length-down-policy"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value = 0  # Scale in when there are no messages
+    
+    customized_metric_specification {
+      metrics {
+        label = "Get the queue size (the number of messages waiting to be processed)"
+        id = "m2"
+          
+        metric_stat {
+          metric {
+            metric_name = "ApproximateNumberOfMessagesVisible"
+            namespace = "AWS/SQS"
+            dimensions {
+              name = "QueueName"
+              value = var.sqs_queue_name
+            }
+          }
+            
+          stat = "Sum"
+        }
+        return_data = true
+      }  
+    }
+  }
+}
+
 
 # Create an AWS CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "ecs_task_log_group" {
