@@ -74,6 +74,7 @@ module "ecs-cluster" {
   s3_snowflake_bucket_arn = data.terraform_remote_state.s3.outputs.snowflake_bucket_arn
   sqs_queue_url = aws_sqs_queue.s3_event_queue.id
   sqs_queue_name = aws_sqs_queue.s3_event_queue.name
+  sqs_queue_arn = aws_sqs_queue.s3_event_queue.arn
   replicas = 0
   container_port = 5000
 
