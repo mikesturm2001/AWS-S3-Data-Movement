@@ -81,9 +81,9 @@ def read_queue():
 
 
 def main():
-    debugpy.listen(('0.0.0.0', 5678))
-    debugpy.wait_for_client()
-    debugpy.breakpoint()
+    #debugpy.listen(('0.0.0.0', 5678))
+    #debugpy.wait_for_client()
+    #debugpy.breakpoint()
 
     read_queue()
 
