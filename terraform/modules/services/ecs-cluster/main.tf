@@ -89,6 +89,13 @@ resource "aws_iam_policy_attachment" "ecr_access_attachment" {
   roles      = [aws_iam_role.ecs_task_execution_role.name]
 }
 
+# Attach the AmazonECSTaskExecutionRolePolicy to the ECS task execution role
+resource "aws_iam_policy_attachment" "ecs_task_execution_role_policy_attachment" {
+  name = "AmazonECSTaskExecutionRolePolicyAttachment"
+  roles = [aws_iam_role.ecs_task_execution_role.name]
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
 resource "aws_iam_policy_attachment" "s3_access_attachment" {
   name       = "S3AccessAttachment"
   policy_arn = aws_iam_policy.s3_access_policy.arn
