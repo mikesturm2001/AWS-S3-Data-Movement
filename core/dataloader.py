@@ -37,14 +37,23 @@ def read_queue():
         print(f"An error occurred: {str(e)}")
         logging.error(f"An error occurred: {str(e)}")
 
-    while True:
+    response = sqs_client.get_queue_attributes(
+        QueueUrl=queue_url,
+        AttributeNames = [
+            'ApproximateNumberOfMessages'
+        ]
+    )
+
+    queue_length = response['Attributes']['ApproximateNumberOfMessages']     
+    
+    while queue_length > 0:
         try:
             # Receive messages from the SQS queue
             response = sqs_client.receive_message(
                 QueueUrl=queue_url,
                 AttributeNames=['All'],
                 MessageAttributeNames=['All'],
-                MaxNumberOfMessages=1,
+                MaxNumberOfMessages=3,
                 WaitTimeSeconds=20  # Adjust this as needed
             )
 
@@ -78,15 +87,27 @@ def read_queue():
             else:
                 print("No messages received from the queue.")
 
+            # update messages remaining
+            response = sqs_client.get_queue_attributes(
+                QueueUrl=queue_url,
+                AttributeNames = [
+                    'ApproximateNumberOfMessages'
+                ]
+            )
+
+            queue_length = response['Attributes']['ApproximateNumberOfMessages'] 
+
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             logging.error(f"An error occurred: {str(e)}")
 
+    logging.info("done processing queue")
+
 
 def main():
-    #debugpy.listen(('0.0.0.0', 5678))
-    #debugpy.wait_for_client()
-    #debugpy.breakpoint()
+    debugpy.listen(('0.0.0.0', 5678))
+    debugpy.wait_for_client()
+    debugpy.breakpoint()
     logging.getLogger().setLevel(logging.INFO)
 
     if logging.getLogger().hasHandlers():

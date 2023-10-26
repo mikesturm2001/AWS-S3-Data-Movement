@@ -154,6 +154,7 @@ resource "aws_ecs_service" "s3_data_movement_service" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.s3_data_movement.arn
   launch_type     = "FARGATE"  # Or "EC2" if using EC2 launch type
+  desired_count = 0
 
   network_configuration {
     subnets = var.subnet_ids
