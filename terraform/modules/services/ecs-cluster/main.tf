@@ -55,7 +55,7 @@ resource "aws_iam_policy" "ecr_access_policy" {
           var.s3_snowflake_bucket_arn
         ]
       },
-            {
+      {
         Action = [
           "sqs:SendMessage",
           "sqs:ReceiveMessage",
@@ -64,6 +64,15 @@ resource "aws_iam_policy" "ecr_access_policy" {
         ],
         Effect = "Allow",
         Resource = var.sqs_queue_arn
+      },
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ],
+        Effect = "Allow",
+        Resource = "arn:aws:logs:*:*:*"
       }
     ]
   })
