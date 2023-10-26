@@ -85,52 +85,25 @@ resource "aws_appautoscaling_policy" "sqs_length_scale" {
     target_value = 1  # Scale out when there is at least one message
     
     customized_metric_specification {
-        metrics {
-          label = "Get the queue size (the number of messages waiting to be processed)"
-          id = "m1"
+      metrics {
+        label = "Get the queue size (the number of messages waiting to be processed)"
+        id = "m1"
           
-          metric_stat {
-            metric {
-              metric_name = "ApproximateNumberOfMessagesVisible"
-              namespace = "AWS/SQS"
+        metric_stat {
+          metric {
+            metric_name = "ApproximateNumberOfMessagesVisible"
+            namespace = "AWS/SQS"
               
-              dimensions {
-                name = "QueueName"
-                value = var.sqs_queue_name
-              }
+            dimensions {
+              name = "QueueName"
+              value = var.sqs_queue_name
             }
-            
-            stat = "Sum"
           }
-          return_data = false
-        }
-        
-        metrics {
-          label = "Get the ECS running task count (the number of currently running tasks)"
-          id = "m2"
-
-          metric_stat {
-            metric {
-              metric_name = "RunningTaskCount"
-              namespace = "ECS/ContainerInsights"
-              
-              dimensions {
-                name = "ClusterName"
-                value = aws_ecs_cluster.cluster.name
-              }
-            }
             
-            stat = "Average"
-          }
-          return_data = false
+          stat = "Sum"
         }
-
-        metrics {
-          label = "Calculate the backlog per instance"
-          id = "e1"
-          expression = "m1 / m2"
-          return_data = true
-        }
+        return_data = true
+      }  
     }
   }
 }
