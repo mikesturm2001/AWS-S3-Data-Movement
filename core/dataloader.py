@@ -3,6 +3,7 @@ import os
 import debugpy
 import json
 from json import JSONDecodeError
+import logging
 
 
 def decode_json_recursively(source):
@@ -84,6 +85,14 @@ def main():
     #debugpy.listen(('0.0.0.0', 5678))
     #debugpy.wait_for_client()
     #debugpy.breakpoint()
+    logging.getLogger().setLevel(logging.INFO)
+
+    if logging.getLogger().hasHandlers():
+        # The Lambda environment pre-configures a handler logging to stderr. If a handler is already configured,
+        # `.basicConfig` does not execute. Thus we set the level directly.
+        logging.getLogger().setLevel(logging.INFO)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
     read_queue()
 
