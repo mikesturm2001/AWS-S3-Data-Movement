@@ -17,7 +17,7 @@ resource "aws_s3_bucket" "s3-drop-zone" {
 
   # Prevent Terraform from attempting to recreate an existing bucket
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
@@ -28,7 +28,7 @@ resource "aws_s3_bucket" "s3-snowflake-zone" {
 
   # Prevent Terraform from attempting to recreate an existing bucket
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
