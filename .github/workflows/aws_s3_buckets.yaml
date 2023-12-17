@@ -46,7 +46,7 @@ jobs:
 
     - name: Clean up
       working-directory: ./terraform/live/global/s3
-      if: ${{ vars.DESTROY }} == 'true'
+      if: "${{ vars.DESTROY }}" == 'true'
       run: terraform destroy -auto-approve
 
 # Add any additional steps or customizations as needed
