@@ -42,7 +42,7 @@ jobs:
       run: terraform apply -auto-approve tfplan
 
     - name: Set terraform DESTROY variable
-      run: echo "DESTROY=false" >> $GITHUB_ENV
+      run: echo "DESTROY=true" >> $GITHUB_ENV
 
     - name: Clean up
       if: ${{ env.DESTROY == 'true' }}
