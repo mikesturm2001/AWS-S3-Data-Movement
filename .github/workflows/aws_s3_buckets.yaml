@@ -42,7 +42,7 @@ jobs:
       run: terraform apply -auto-approve tfplan
 
     - name: Clean up
-      if: '${{ vars.DESTROY }}' == 'true'
+      if: ${{ vars.DESTROY }} == 'true'
       working-directory: ./terraform/live/global/s3
       run: terraform destroy -auto-approve
 
