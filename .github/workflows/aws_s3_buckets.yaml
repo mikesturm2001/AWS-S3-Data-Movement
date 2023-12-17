@@ -45,7 +45,7 @@ jobs:
       run: echo "DESTROY=false" >> $GITHUB_ENV
 
     - name: Clean up
-      if: ${{ env.DESTROY }}
+      if: ${{ env.DESTROY == 'true' }}
       working-directory: ./terraform/live/global/s3
       run: terraform destroy -auto-approve
 
