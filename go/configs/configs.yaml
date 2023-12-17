@@ -1,0 +1,5 @@
+# configs/configs.yaml
+
+sqs_url: "https://sqs.us-east-1.amazonaws.com/157099750066/s3-event-queue"
+s3_drop_zone_bucket: "s3-drop-zone-12134477a"
+s3_snowflake_bucket: "snowflake-drop-zone-12134477a"
