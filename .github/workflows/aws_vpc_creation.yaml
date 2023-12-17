@@ -44,7 +44,7 @@ jobs:
       run: terraform apply -auto-approve tfplan
 
     - name: Clean up
-      if: ${{ env.VPC_DESTROY }} == 'true'
+      if: ${{ env.VPC_DESTROY == 'true' }}
       working-directory: ./terraform/live/global/vpc
       run: terraform destroy -auto-approve
 
