@@ -40,6 +40,12 @@ resource "aws_iam_role" "ec2_role" {
   }
 }
 
+# Extracting ARNs from the outputs
+locals {
+  drop_zone_bucket_arns   = [data.terraform_remote_state.s3.outputs.drop_zone_bucket_arn]
+  snowflake_bucket_arns   = [data.terraform_remote_state.s3.outputs.snowflake_bucket_arn]
+}
+
 # Attach an inline policy to the IAM role to grant S3 permissions
 resource "aws_iam_policy" "s3_permissions_policy" {
   name        = "s3-access-policy"
@@ -48,10 +54,10 @@ resource "aws_iam_policy" "s3_permissions_policy" {
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
-      {
+      for arn in concat(local.drop_zone_bucket_arns, local.snowflake_bucket_arns) : {
         Action   = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
         Effect   = "Allow",
-        Resource = data.terraform_remote_state.s3.outputs.s3_bucket_arns
+        Resource = arn
       }
     ]
   })
