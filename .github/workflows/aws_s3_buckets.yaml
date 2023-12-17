@@ -41,12 +41,9 @@ jobs:
       working-directory: ./terraform/live/global/s3
       run: terraform apply -auto-approve tfplan
 
-    - name: Read variable
-      run: echo "test ${{ vars.DESTROY }}"
-
     - name: Clean up
+      if: '${{ vars.DESTROY }}' == 'true'
       working-directory: ./terraform/live/global/s3
-      if: "${{ vars.DESTROY }}" == 'true'
       run: terraform destroy -auto-approve
 
 # Add any additional steps or customizations as needed
