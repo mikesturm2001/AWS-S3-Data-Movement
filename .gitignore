@@ -37,3 +37,49 @@ terraform.rc
 
 # Environments
 .env
+
+# Go
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Directory created by `go test -race`
+race/
+
+# Compiled Go source
+*.cgo.go
+
+# Compiled Go binaries
+*.exe
+
+# Test binary
+*.test
+
+# Output files
+*.out
+
+# Custom MacOS resource fork metadata
+.DS_Store
+
+# Go related files
+.idea/
+.vscode/
+*.code-workspace
+
+# Dependency directories
+vendor/
+
+# Compiled Go packages
+pkg/
