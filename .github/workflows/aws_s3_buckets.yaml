@@ -20,7 +20,7 @@ jobs:
     - name: Load environment variables
       run: |
         source $GITHUB_WORKSPACE/.github/workflows/workflow-parameters.env
-        echo "S3_DESTROY=$DESTROY" >> $GITHUB_ENV
+        echo "S3_DESTROY=$S3_DESTROY" >> $GITHUB_ENV
       env:
         GITHUB_ENV: ${{ github.workspace }}/.env
 
