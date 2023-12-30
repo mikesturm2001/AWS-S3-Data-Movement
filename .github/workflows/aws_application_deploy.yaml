@@ -51,7 +51,7 @@ jobs:
       run: terraform apply -auto-approve tfplan
 
     - name: Clean up
-      if: ${{ env.APPLICATION_DESTORY == 'true' }}
+      if: ${{ env.APPLICATION_DESTROY == 'true' }}
       working-directory: ./terraform/live/dev/services/application
       run: terraform destroy -auto-approve
 
